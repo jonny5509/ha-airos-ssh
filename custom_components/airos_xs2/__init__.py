@@ -2,16 +2,22 @@
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Platform
+from homeassistant.helpers.importlib import async_import_module
 
 from .const import DOMAIN
-from .coordinator import AiRXS2Coordinator
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.SWITCH]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up an AirOS device."""
-    coordinator = AiRXS2Coordinator(
+    # asyncssh and the coordinator's parsing dependencies are relatively heavy.
+    # Import them through Home Assistant's import executor to avoid blocking the
+    # event loop when the integration is first loaded.
+    coordinator_module = await async_import_module(
+        hass, f"{__package__}.coordinator"
+    )
+    coordinator = coordinator_module.AiRXS2Coordinator(
         hass,
         entry.data["host"],
         entry.data["username"],
