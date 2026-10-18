@@ -98,8 +98,8 @@ SENSOR_NAME_OVERRIDES = {
     "cpu_usage": "CPU Usage",
     "firmware_upgrade": "Firmware Upgrade",
     "ram_usage_percent": "RAM Usage",
-    "ethernet_rx_bytes": "LAN Received Data",
-    "ethernet_tx_bytes": "LAN Transmitted Data",
+    "ethernet_rx_bytes": "Ethernet Received Data",
+    "ethernet_tx_bytes": "Ethernet Transmitted Data",
     "wireless_rx_bytes": "Wireless Received Data",
     "wireless_tx_bytes": "Wireless Transmitted Data",
     "wip": "Wireless IP Address",
@@ -120,13 +120,13 @@ SENSOR_NAME_OVERRIDES = {
     "err_misc": "Wireless Other Errors",
     "lmac": "Ethernet MAC Address",
     "lip": "Ethernet IP Address",
-    "lan_state": "LAN State",
-    "lan_rxbytes": "LAN Received Data",
-    "lan_rxpackets": "LAN Received Packets",
-    "lan_rxerrors": "LAN Receive Errors",
-    "lan_txbytes": "LAN Transmitted Data",
-    "lan_txpackets": "LAN Transmitted Packets",
-    "lan_txerrors": "LAN Transmit Errors",
+    "lan_state": "Ethernet Interface State",
+    "lan_rxbytes": "Ethernet Received Data",
+    "lan_rxpackets": "Ethernet Received Packets",
+    "lan_rxerrors": "Ethernet Receive Errors",
+    "lan_txbytes": "Ethernet Transmitted Data",
+    "lan_txpackets": "Ethernet Transmitted Packets",
+    "lan_txerrors": "Ethernet Transmit Errors",
     "wlan_rxbytes": "Wireless Received Data",
     "wlan_rxpackets": "Wireless Received Packets",
     "wlan_rxerrors": "Wireless Receive Errors",
@@ -182,7 +182,7 @@ def _device_kind(key):
     if key == "uptime_seconds":
         return "main"
     # Legacy AirOS keys may call the wired interface "lan" or "eth".
-    if normalized.startswith(("ethernet_", "lan_", "eth")) or key in {"ethernet_mac", "lmac", "lip"}:
+    if normalized.startswith(("ethernet", "eth")) or re.sub(r"[^a-z0-9]", "", normalized).startswith(("lanstate", "lanrx", "lantx", "lanmac", "lanip")) or key in {"ethernet_mac", "lmac", "lip"}:
         return "ethernet"
     return "main"
 
