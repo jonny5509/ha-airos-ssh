@@ -1,6 +1,6 @@
 # Ubiquiti AirOS (SSH)
 
-Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
+Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc). For the HTTP-only variant, see [ha-airos-http](https://github.com/jonny5509/ha-airos-http).
 
 ## Features
 
@@ -27,7 +27,7 @@ Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation
 ## Installation (HACS)
 
 1. Open **HACS → Integrations → ⋮ → Custom repositories**.
-2. Add `https://github.com/jonny5509/ha-airos`.
+2. Add `https://github.com/jonny5509/ha-airos-ssh`.
 3. Select **Integration** as the category.
 4. If HACS asks for a branch, select `main`. Do not enter a short commit hash (for example, `5544ed9`) as a branch name.
 5. Install the integration and restart Home Assistant.
@@ -45,18 +45,20 @@ errors reported after the integration loads.
 
 ---
 
-## Integration logo
+## Branding
 
-The integration is prepared for Home Assistant's local brand-image convention. When you have your logo ready, add these PNG files to `custom_components/airos_xs2/brand/`:
+The SSH and [HTTP integration](https://github.com/jonny5509/ha-airos-http) use the same AirOS brand artwork so they appear consistently in Home Assistant. The PNG assets are stored in `custom_components/airos_xs2/brand/`:
 
 - `icon.png` — 256 × 256 px
-- `icon@2x.png` — 512 × 512 px (high-resolution version)
+- `icon@2x.png` — 512 × 512 px
 
-Use a square PNG with transparent background if possible. Keep the important artwork centered with some padding so it looks good when Home Assistant scales it. These files belong in the repository; uploading a logo to the HACS UI itself is not required. See [the logo placement notes](custom_components/airos_xs2/brand/README.md).
+The artwork is maintained in the repository; no separate logo upload in HACS is required. See [the brand asset notes](custom_components/airos_xs2/brand/README.md).
 
 ---
 
 ## Screenshots
+
+These screenshots are shared with the HTTP integration and illustrate the Home Assistant integration/device presentation.
 
 ![Overview](docs/screenshots/Screenshot1.png)
 ![Coop Radio](docs/screenshots/Screenshot2.png)
