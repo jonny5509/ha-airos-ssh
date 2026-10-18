@@ -210,6 +210,10 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 if value and str(value).strip() and str(value).strip().lower() not in {"ubnt", "ubiquiti", "unknown", "air os", "airos", "ubiquiti airos"}:
                     data["device_model"] = str(value).strip()
                     break
+            else:
+                # Match the HTTP integration: use the vendor name rather than
+                # exposing a generic UBNT identifier as the hardware model.
+                data["device_model"] = "Ubiquiti"
 
     @staticmethod
     def _update_firmware_upgrade_status(data):
