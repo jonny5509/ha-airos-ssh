@@ -178,7 +178,14 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
 
     @staticmethod
     def _identify_device(data, extra_output=""):
-        """Infer a readable model from airOS metadata and legacy system files."""
+        """Infer a readable model and normalize firmware metadata."""
+        # airOS versions vary the capitalization and separators of these fields.
+        for key in list(data):
+            normalized_key = re.sub(r"[^a-z0-9]", "", str(key).lower())
+            if normalized_key == "firmwareversion" and key != "firmwareVersion":
+                data.setdefault("firmwareVersion", data[key])
+                data.pop(key, None)
+
         identity_keys = {
             "platform", "deviceid", "board", "boardname", "board_name",
             "product", "productname", "model", "devicemodel", "hardware",
@@ -195,11 +202,18 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         elif re.search(r"nanostation\s*5|\bns5\b|\bxs5\b", identity, re.IGNORECASE) or "nanostation5" in compact or "xs5" in compact:
             data["device_model"] = "NanoStation5"
         else:
-            for key in ("platform", "deviceId", "board", "board_name", "product", "model", "cpu_model"):
-                value = data.get(key)
-                if value and str(value).strip():
+            values_by_key = {str(key).lower(): value for key, value in data.items()}
+            # deviceId commonly contains only the vendor string "UBNT", so
+            # prefer fields that actually identify the hardware model.
+            for key in ("platform", "board", "boardname", "board_name", "product", "productname", "model", "devicemodel", "hardware", "cpu_model"):
+                value = values_by_key.get(key)
+                if value and str(value).strip() and str(value).strip().lower() not in {"ubnt", "ubiquiti", "unknown", "air os", "airos", "ubiquiti airos"}:
                     data["device_model"] = str(value).strip()
                     break
+            else:
+                # Match the HTTP integration: use the vendor name rather than
+                # exposing a generic UBNT identifier as the hardware model.
+                data["device_model"] = "Ubiquiti"
 
     @staticmethod
     def _update_firmware_upgrade_status(data):
