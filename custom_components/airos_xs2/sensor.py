@@ -165,6 +165,16 @@ async def async_setup_entry(hass, entry, async_add_entities):
         model=f"{data.get('device_model') or 'AirOS'} Ethernet",
         via_device=(DOMAIN, host),
     )
+    # Always register both interface devices, even when firmware omits optional
+    # interface metrics on the first poll.
+    wireless_device = device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, f"{host}_wireless")},
+        name=f"{display_name} Wireless",
+        manufacturer="Ubiquiti",
+        model=f"{data.get('device_model') or 'AirOS'} Wireless",
+        via_device=(DOMAIN, host),
+    )
     entity_registry = er.async_get(hass)
 
     # Remove registry entries left behind by older releases that exposed raw
@@ -192,9 +202,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if not entity.unique_id.startswith(prefix):
             continue
         key = entity.unique_id[len(prefix):]
-        if _device_kind(key) == "ethernet" and entity.device_id != ethernet_device.id:
+        kind = _device_kind(key)
+        target_device = (
+            ethernet_device if kind == "ethernet"
+            else wireless_device if kind == "wireless"
+            else None
+        )
+        if target_device and entity.device_id != target_device.id:
             entity_registry.async_update_entity(
-                entity.entity_id, device_id=ethernet_device.id
+                entity.entity_id, device_id=target_device.id
             )
 
     # The first probe may not identify the hardware. Update the main device
