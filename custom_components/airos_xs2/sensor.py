@@ -30,8 +30,17 @@ OPTIONAL_SENSORS = {
     "cpu_usage": ("CPU Usage", "%"),
     "firmware_upgrade": ("Firmware Upgrade", None),
     "ram_usage_percent": ("RAM Usage", "%"),
-    "ethernet_rx_bytes": ("LAN Received Data", "B"),
-    "ethernet_tx_bytes": ("LAN Transmitted Data", "B"),
+    "ethernet_rx_bytes": ("Ethernet Received Data", "B"),
+    "ethernet_tx_bytes": ("Ethernet Transmitted Data", "B"),
+    "lan_state": ("Ethernet Interface State", None),
+    "lan_rxbytes": ("Ethernet Received Data", "B"),
+    "lan_rxpackets": ("Ethernet Received Packets", None),
+    "lan_rxerrors": ("Ethernet Receive Errors", None),
+    "lan_txbytes": ("Ethernet Transmitted Data", "B"),
+    "lan_txpackets": ("Ethernet Transmitted Packets", None),
+    "lan_txerrors": ("Ethernet Transmit Errors", None),
+    "lmac": ("Ethernet MAC Address", None),
+    "lip": ("Ethernet IP Address", None),
     "wireless_rx_bytes": ("Wireless Received Data", "B"),
     "wireless_tx_bytes": ("Wireless Transmitted Data", "B"),
 }
@@ -173,7 +182,7 @@ def _device_kind(key):
     if key == "uptime_seconds":
         return "main"
     # Legacy AirOS keys may call the wired interface "lan" or "eth".
-    if normalized.startswith(("ethernet_", "lan", "eth")) or normalized == "ethernet_mac":
+    if normalized.startswith(("ethernet_", "lan_", "eth")) or key in {"ethernet_mac", "lmac", "lip"}:
         return "ethernet"
     return "main"
 
@@ -355,11 +364,11 @@ class AiRXS2Sensor(SensorEntity):
             self._attr_device_class = SensorDeviceClass.FREQUENCY
         elif key == "uptime_seconds":
             self._attr_device_class = SensorDeviceClass.DURATION
-        elif key in {"ethernet_rx_bytes", "ethernet_tx_bytes",
+        elif key in {"ethernet_rx_bytes", "ethernet_tx_bytes", "lan_rxbytes", "lan_txbytes",
                      "wireless_rx_bytes", "wireless_tx_bytes"}:
             self._attr_device_class = SensorDeviceClass.DATA_SIZE
 
-        if key in {"ethernet_rx_bytes", "ethernet_tx_bytes",
+        if key in {"ethernet_rx_bytes", "ethernet_tx_bytes", "lan_rxbytes", "lan_txbytes",
                    "wireless_rx_bytes", "wireless_tx_bytes"}:
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
         elif key in {"signal", "noise", "ccq", "snr", "wlanTxRate", "wlanRxRate",
