@@ -285,9 +285,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     added_keys = set(BASE_SENSORS)
     for key, (label, unit) in OPTIONAL_SENSORS.items():
-        # Prefer the MAC reported directly by AirOS over the interface-probe
-        # alias when both describe the same wireless interface.
+        # Prefer the MAC reported directly by AirOS over interface-probe aliases.
         if key == "wireless_mac" and data.get("wlanMac") not in (None, ""):
+            added_keys.add(key)
+            continue
+        # lmac and ethernet_mac can be two names for the same wired interface.
+        if key == "lmac" and data.get("ethernet_mac") not in (None, ""):
             added_keys.add(key)
             continue
         # IP discovery depends on an optional SSH probe. Register the entity
@@ -309,6 +312,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     added_keys.update({"mem_total_bytes", "mem_free_bytes", "mem_available_bytes"})
 
     for key, value in data.items():
+        # Collapse legacy spellings so one interface has one MAC sensor.
+        if key in {"wmac", "wlan_mac", "wireless_mac"} and data.get("wlanMac") not in (None, ""):
+            continue
+        if key == "lmac" and data.get("ethernet_mac") not in (None, ""):
+            continue
         if key not in added_keys and value not in (None, ""):
             sensors.append(
                 AiRXS2Sensor(
