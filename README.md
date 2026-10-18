@@ -73,4 +73,4 @@ Use a square PNG with transparent background if possible. Keep the important art
 
 ## License
 
-MIT License
+[MIT License](LICENSE)
