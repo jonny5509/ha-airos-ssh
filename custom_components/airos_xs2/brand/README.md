@@ -1,10 +1,8 @@
 # Integration brand images
 
-Place the AirOS integration logo in this directory as PNG files:
+This directory contains the AirOS integration's brand assets:
 
-- `icon.png` — 256 × 256 pixels
-- `icon@2x.png` — 512 × 512 pixels
+- `icon.png` — standard 256 × 256 PNG icon
+- `icon@2x.png` — high-resolution 512 × 512 PNG icon
 
-Use the same square artwork for both sizes. Transparent backgrounds are recommended. Keep the logo artwork centered and avoid tiny text.
-
-These filenames and this location are used for Home Assistant integration brand imagery. The README is only a placeholder/instruction file; it is not the logo itself. Add the two PNG assets here when ready.
+Keep both files in this directory alongside the integration's `manifest.json`. Home Assistant 2026.3 and newer supports local brand assets for custom integrations.
