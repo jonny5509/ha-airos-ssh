@@ -30,7 +30,16 @@ Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation
 
 ## Branding
 
-Home Assistant 2026.3 and newer supports integration brand images shipped in the integration's `brand/` directory. The `custom_components/airos_xs2/brand/README.md` documents the intended assets. The PNG image files still need to be added before the integration has its own logo/icon.
+The integration includes its own Home Assistant brand assets in `custom_components/airos_xs2/brand/`:
+
+- `icon.png` — standard 256 × 256 icon
+- `icon@2x.png` — high-resolution 512 × 512 icon
+
+Home Assistant 2026.3 and newer can serve these local brand assets directly after the integration is installed. HACS Marketplace branding may use the separate brand-image publishing flow. The artwork is for identification and is not an official Home Assistant brand.
+
+## Validation
+
+GitHub Actions runs both Home Assistant `hassfest` validation and the HACS integration validation on pushes and pull requests.
 
 ## Compatibility
 
