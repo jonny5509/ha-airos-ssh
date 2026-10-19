@@ -1,6 +1,4 @@
 {
   "name": "Ubiquiti AirOS (SSH)",
-  "render_readme": true,
-  "domains": ["airos_xs2"],
-  "iot_class": "local_polling"
+  "render_readme": true
 }
