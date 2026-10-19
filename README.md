@@ -7,69 +7,35 @@ Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation
 - SSH polling of `mca-status`
 - Signal, Noise, CCQ, SNR
 - TX/RX rate monitoring
-- Exposes all additional `mca-status` key/value fields as sensors
-- Best-effort uptime, memory, load average, CPU model, IP/MAC, and Ethernet/wireless byte counters from common BusyBox/procfs commands (unsupported probes are skipped)
+- Exposes additional `mca-status` key/value fields as sensors
+- Best-effort uptime, memory, load average, CPU model, IP/MAC, and Ethernet/wireless byte counters
 - Reboot switch
 - Config Flow (UI install)
 - HACS compatible
 
----
-
-## Installation (Manual)
+## Installation (manual)
 
 1. Download this repository.
 2. Copy `custom_components/airos_xs2` into your Home Assistant `/config/custom_components/` directory.
 3. Restart Home Assistant.
-4. Add integration via **Settings → Devices & Services → Add Integration**.
-
----
+4. Go to **Settings → Devices & Services → Add Integration** and select **Ubiquiti AirOS (SSH)**.
 
 ## Installation (HACS)
 
 1. Open **HACS → Integrations → ⋮ → Custom repositories**.
-2. Add `https://github.com/jonny5509/ha-airos`.
+2. Add `https://github.com/jonny5509/ha-airos-ssh`.
 3. Select **Integration** as the category.
-4. If HACS asks for a branch, select `main`. Do not enter a short commit hash (for example, `5544ed9`) as a branch name.
-5. Install the integration and restart Home Assistant.
+4. Install the integration and restart Home Assistant.
+5. Add it from **Settings → Devices & Services → Add Integration**.
 
-### Troubleshooting HACS download errors
+## Branding
 
-If the Home Assistant log says HACS is trying to download a URL like
-`.../archive/refs/heads/5544ed9.zip` and receives a 404, HACS is treating
-`5544ed9` as a branch name, but that branch may not exist. In HACS, remove
-the incorrect custom-repository entry and add this repository again, making
-sure the selected branch is `main`. Then retry the download.
-
-This HACS configuration issue is separate from SSH connection or `mca-status`
-errors reported after the integration loads.
-
----
-
-## Integration logo
-
-The integration is prepared for Home Assistant's local brand-image convention. When you have your logo ready, add these PNG files to `custom_components/airos_xs2/brand/`:
-
-- `icon.png` — 256 × 256 px
-- `icon@2x.png` — 512 × 512 px (high-resolution version)
-
-Use a square PNG with transparent background if possible. Keep the important artwork centered with some padding so it looks good when Home Assistant scales it. These files belong in the repository; uploading a logo to the HACS UI itself is not required. See [the logo placement notes](custom_components/airos_xs2/brand/README.md).
-
----
-
-## Screenshots
-
-![Overview](docs/screenshots/Screenshot1.png)
-![Coop Radio](docs/screenshots/Screenshot2.png)
-![Shed Radio](docs/screenshots/Screenshot3.png)
-
----
+Home Assistant 2026.3 and newer supports integration brand images shipped in the integration's `brand/` directory. The `custom_components/airos_xs2/brand/README.md` documents the intended assets. The PNG image files still need to be added before the integration has its own logo/icon.
 
 ## Compatibility
 
 - Ubiquiti AirOS firmware 4.x
 - Uses legacy SSH algorithms required by older firmware
-
----
 
 ## License
 
