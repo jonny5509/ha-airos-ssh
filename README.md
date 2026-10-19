@@ -1,5 +1,7 @@
 # Ubiquiti AirOS (SSH)
 
+[![Downloads](https://img.shields.io/github/downloads/jonny5509/ha-airos-ssh/total?label=downloads)](https://github.com/jonny5509/ha-airos-ssh/releases)
+
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
 
 ## Features
