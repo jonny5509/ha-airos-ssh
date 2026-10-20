@@ -298,7 +298,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # registry entry on later coordinator refreshes once a specific model appears.
     def _update_registered_device_model():
         """Keep the model label consistent with the HTTP integration."""
-        canonical_model = "NanoStation5 / airOS 4.x"
+        canonical_model = "Original NanoStation 2/5 / airOS 3.x–4.x"
         current_device = device_registry.async_get_device(
             identifiers={(DOMAIN, entry.data["host"])}
         )
@@ -453,9 +453,9 @@ class AiRXS2Sensor(SensorEntity):
             "identifiers": {(DOMAIN, host if self._device_kind == "main" else f"{host}_{self._device_kind}")},
             "name": self._device_name,
             "manufacturer": "Ubiquiti",
-            "model": "NanoStation5 / airOS 4.x" if self._device_kind == "main" else (
-                "NanoStation5 / airOS 4.x LAN" if self._device_kind == "ethernet" else
-                "NanoStation5 / airOS 4.x Wireless"
+            "model": "Original NanoStation 2/5 / airOS 3.x–4.x" if self._device_kind == "main" else (
+                "Original NanoStation 2/5 / airOS 3.x–4.x LAN" if self._device_kind == "ethernet" else
+                "Original NanoStation 2/5 / airOS 3.x–4.x Wireless"
             ),
         }
         if self._device_kind != "main":
