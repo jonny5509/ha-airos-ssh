@@ -4,6 +4,14 @@
 
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
 
+## What's new in 2.2.1
+
+- Documents troubleshooting for Home Assistant's `Integration 'airos_xs2' not found` error.
+- Clarifies the required custom component directory layout and restart steps.
+- Bumps the integration manifest version to `2.2.1`.
+
+**Important:** The `airos_xs2` domain already matches the current manifest and Python code. This error usually means Home Assistant cannot discover the installed files, so upgrading alone will not repair a missing or incorrectly nested installation. Follow the troubleshooting steps below.
+
 ## Features
 
 - SSH polling of `mca-status`
