@@ -231,7 +231,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         data["firmware_upgrade_latest_version"] = "4.0.4.5074"
         data["firmware_upgrade_source"] = "https://ui.com/download/airmax-legacy"
 
-        if data.get("device_model") != "NanoStation5":
+        if data.get("device_model") != "NanoStation 5":
             data["firmware_upgrade"] = "Unknown"
             data["firmware_upgrade_reason"] = "No verified firmware catalog entry for this device model."
             return
