@@ -1,5 +1,11 @@
 # Ubiquiti AirOS (SSH)
 
+## What's new in v1.1.8
+
+- Migrates the Ethernet IP sensor to `sensor.airos_device_ip_address`.
+- Migrates the Ethernet MAC sensor to `sensor.nanostation5_ethernet_nanostation5_device_mac_address`.
+
+
 ## What's new in v1.1.7
 
 - Removes the device model/name prefix (for example, `NanoStation5`) from sensor display names while retaining device grouping and the device name itself.
