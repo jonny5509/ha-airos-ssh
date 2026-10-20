@@ -318,7 +318,7 @@ class AiRXS2Sensor(SensorEntity):
             self._device_name = f"{self._display_name} Wireless"
         else:
             self._device_name = self._display_name
-        self._attr_name = "AirOS Hostname" if key in {"side_devicename", "devicename", "hostname"} else f"{self._display_name} {label or key}"
+        self._attr_name = "AirOS Hostname" if key in {"side_devicename", "devicename", "hostname"} else (label or key)
         self._attr_unique_id = f"{entry.data['host']}_{key}" + (
             f"_{unique_id_suffix}" if unique_id_suffix else ""
         )
