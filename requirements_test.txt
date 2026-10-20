@@ -1,7 +1,7 @@
 # Test dependencies
-# Avoid legacy Home Assistant releases whose pinned PyYAML cannot build on Python 3.13.
+# Keep AsyncSSH compatible with Home Assistant's cryptography pin.
 homeassistant>=2025.1.0
 PyYAML>=6.0.2
 pytest
 pytest-asyncio
-asyncssh>=2.24.0
+asyncssh>=2.20.0,<2.24.0
