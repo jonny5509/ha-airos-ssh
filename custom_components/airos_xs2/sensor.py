@@ -210,22 +210,17 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 entity.entity_id, new_entity_id=hostname_entity_id
             )
 
-    # Migrate the Ethernet IP and MAC sensors to their requested entity IDs.
-    # Preserve unique IDs so existing entity history and registry settings remain.
-    entity_id_migrations = {
-        "sensor.airos_ethernet_ip_address": "sensor.airos_device_ip_address",
-        "sensor.airos_ethernet_mac_address": (
-            "sensor.nanostation5_ethernet_nanostation5_device_mac_address"
-        ),
+    # Remove obsolete Ethernet-specific IP/MAC entities. The integration
+    # keeps the canonical Device IP Address and Device MAC Address sensors,
+    # so these legacy Ethernet aliases would be redundant.
+    obsolete_ethernet_entity_ids = {
+        "sensor.airos_ethernet_ip_address",
+        "sensor.airos_ethernet_mac_address",
     }
-    for old_entity_id, new_entity_id in entity_id_migrations.items():
-        entity = entity_registry.async_get(old_entity_id)
-        if entity is None or entity.config_entry_id != entry.entry_id:
-            continue
-        if entity_registry.async_get(new_entity_id) is None:
-            entity_registry.async_update_entity(
-                old_entity_id, new_entity_id=new_entity_id
-            )
+    for entity_id in obsolete_ethernet_entity_ids:
+        entity = entity_registry.async_get(entity_id)
+        if entity is not None and entity.config_entry_id == entry.entry_id:
+            entity_registry.async_remove(entity_id)
 
     # Remove registry entries left behind by older releases that exposed raw
     # memory counters as individual sensors. These keys are now attributes on
