@@ -83,6 +83,8 @@ SENSOR_NAME_OVERRIDES = {
     "frequency": "Wireless Frequency",
     "mode": "Wireless Mode",
     "hostname": "Hostname",
+    "side_devicename": "Hostname",
+    "devicename": "Hostname",
     "uptime_seconds": "Uptime",
     "ip_address": "Device IP Address",
     "cpu_model": "CPU Model",
@@ -166,6 +168,25 @@ async def async_setup_entry(hass, entry, async_add_entities):
         via_device=(DOMAIN, host),
     )
     entity_registry = er.async_get(hass)
+
+    # Keep the device-name sensor on the requested stable entity ID. The unique
+    # ID remains unchanged so existing registry metadata and history are retained.
+    hostname_entity_id = "sensor.airos_hostname"
+    legacy_hostname_ids = {
+        f"{host}_side_devicename",
+        f"{host}_devicename",
+    }
+    for entity in list(entity_registry.entities.values()):
+        if entity.config_entry_id != entry.entry_id:
+            continue
+        if entity.unique_id not in legacy_hostname_ids:
+            continue
+        if entity.entity_id == hostname_entity_id:
+            continue
+        if entity_registry.async_get(hostname_entity_id) is None:
+            entity_registry.async_update_entity(
+                entity.entity_id, new_entity_id=hostname_entity_id
+            )
 
     # Remove registry entries left behind by older releases that exposed raw
     # memory counters as individual sensors. These keys are now attributes on
@@ -287,7 +308,7 @@ class AiRXS2Sensor(SensorEntity):
             self._device_name = f"{self._display_name} Wireless"
         else:
             self._device_name = self._display_name
-        self._attr_name = f"{self._display_name} {label or key}"
+        self._attr_name = "AirOS Hostname" if key in {"side_devicename", "devicename", "hostname"} else f"{self._display_name} {label or key}"
         self._attr_unique_id = f"{entry.data['host']}_{key}" + (
             f"_{unique_id_suffix}" if unique_id_suffix else ""
         )
