@@ -307,12 +307,14 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # Raw memory counters are attributes of RAM Usage, not separate entities.
     added_keys.update({"mem_total_bytes", "mem_free_bytes", "mem_available_bytes"})
 
-    # Older AirOS output may expose the same receive-error counter under
-    # an Ethernet-specific alias as well as the canonical LAN key. Prefer the
-    # LAN Receive Errors entity and suppress the duplicate alias.
+    # Older AirOS output may expose the same RX/TX error counters under
+    # Ethernet-specific aliases as well as the canonical LAN keys. Prefer
+    # the LAN Receive/Transmit Errors entities and suppress duplicate aliases.
     duplicate_ethernet_aliases = {
         "ethernet_rx_errors": "lan_rx_errors",
         "rx errors": "lan_rx_errors",
+        "ethernet_tx_errors": "lan_tx_errors",
+        "tx errors": "lan_tx_errors",
     }
     for key, value in data.items():
         canonical_key = duplicate_ethernet_aliases.get(key.strip().lower())
