@@ -194,7 +194,12 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
 
     @staticmethod
     def _identify_device(data, extra_output=""):
-        """Infer a readable model from airOS metadata and legacy system files."""
+        """Infer a legacy airOS model from metadata and legacy system files.
+
+        Original airOS 3.x-4.x products often report board/platform identifiers
+        instead of the retail product name. Match explicit family/band aliases
+        when present, and retain the raw metadata as a fallback.
+        """
         identity_keys = {
             "platform", "deviceid", "board", "boardname", "board_name",
             "product", "productname", "model", "devicemodel", "hardware",
@@ -205,11 +210,42 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 parts.append(str(value))
         identity = " ".join(parts)
         compact = re.sub(r"[^a-z0-9]", "", identity.lower())
-        # Match the requested original NanoStation models before generic platform names.
-        if re.search(r"nanostation\s*2|\bns2\b|\bxs2\b", identity, re.IGNORECASE) or "nanostation2" in compact or "xs2" in compact:
-            data["device_model"] = "NanoStation2"
-        elif re.search(r"nanostation\s*5|\bns5\b|\bxs5\b", identity, re.IGNORECASE) or "nanostation5" in compact or "xs5" in compact:
-            data["device_model"] = "NanoStation5"
+
+        # Test specific product families before generic NanoStation aliases.
+        models = (
+            (r"picostation\s*([25])|picostation([25])", "PicoStation"),
+            (r"powerstation\s*([25])|powerstation([25])", "PowerStation"),
+            (r"nanostation\s*loco\s*([25])|loco([25])", "NanoStation Loco"),
+            (r"\bbullet\s*([25])\b|bullet([25])", "Bullet"),
+            (r"nanostation\s*([25])|nanostation([25])|\bns([25])\b|\bxs([25])\b", "NanoStation"),
+        )
+        detected = None
+        for pattern, family in models:
+            match = re.search(pattern, identity, re.IGNORECASE)
+            if match:
+                band = next((group for group in match.groups() if group), None)
+                if band:
+                    detected = f"{family}{band}" if family == "NanoStation" else f"{family} {band}"
+                    break
+            # Compact matching supports board identifiers such as loco5 or NS2.
+            aliases = {
+                "picostation2": ("PicoStation", "2"), "picostation5": ("PicoStation", "5"),
+                "powerstation2": ("PowerStation", "2"), "powerstation5": ("PowerStation", "5"),
+                "nanostationloco2": ("NanoStation Loco", "2"), "loco2": ("NanoStation Loco", "2"),
+                "nanostationloco5": ("NanoStation Loco", "5"), "loco5": ("NanoStation Loco", "5"),
+                "bullet2": ("Bullet", "2"), "bullet5": ("Bullet", "5"),
+                "nanostation2": ("NanoStation", "2"), "ns2": ("NanoStation", "2"), "xs2": ("NanoStation", "2"),
+                "nanostation5": ("NanoStation", "5"), "ns5": ("NanoStation", "5"), "xs5": ("NanoStation", "5"),
+            }
+            for alias, (family_name, band) in aliases.items():
+                if alias in compact:
+                    detected = f"{family_name}{band}" if family_name == "NanoStation" else f"{family_name} {band}"
+                    break
+            if detected:
+                break
+
+        if detected:
+            data["device_model"] = detected
         else:
             for key in ("platform", "deviceId", "board", "board_name", "product", "model", "cpu_model"):
                 value = data.get(key)
