@@ -18,7 +18,7 @@ OPTIONAL_SENSORS = {
     "frequency": ("Wireless Frequency", "MHz"),
     "wlanMac": ("Wireless MAC Address", None),
     "ethernet_mac": ("Ethernet MAC Address", None),
-    "ethernet_interface_state": ("Ethernet Interface State", None),
+    "ethernet_interface_state": ("LAN State", None),
     "wireless_interface_state": ("Wireless Interface State", None),
     "wireless_mac": ("Wireless MAC Address", None),
     "mac": ("Device MAC Address", None),
@@ -30,8 +30,12 @@ OPTIONAL_SENSORS = {
     "cpu_usage": ("CPU Usage", "%"),
     "firmware_upgrade": ("Firmware Upgrade", None),
     "ram_usage_percent": ("RAM Usage", "%"),
-    "ethernet_rx_bytes": ("Ethernet Bytes Received", "B"),
-    "ethernet_tx_bytes": ("Ethernet Bytes Sent", "B"),
+    "ethernet_rx_bytes": ("LAN Received Data", "B"),
+    "ethernet_tx_bytes": ("LAN Transmitted Data", "B"),
+    "lan_rx_errors": ("LAN Receive Errors", None),
+    "lan_rx_packets": ("LAN Received Packets", None),
+    "lan_tx_errors": ("LAN Transmit Errors", None),
+    "lan_tx_packets": ("LAN Transmitted Packets", None),
     "wireless_rx_bytes": ("Wireless Bytes Received", "B"),
     "wireless_tx_bytes": ("Wireless Bytes Sent", "B"),
 }
@@ -76,7 +80,7 @@ SENSOR_NAME_OVERRIDES = {
     "wlanMac": "Wireless MAC Address",
     "wireless_mac": "Wireless MAC Address",
     "ethernet_mac": "Ethernet MAC Address",
-    "ethernet_interface_state": "Ethernet Interface State",
+    "ethernet_interface_state": "LAN State",
     "wireless_interface_state": "Wireless Interface State",
     "mac": "Device MAC Address",
     "essid": "Wireless Network Name (SSID)",
@@ -91,8 +95,12 @@ SENSOR_NAME_OVERRIDES = {
     "cpu_usage": "CPU Usage",
     "firmware_upgrade": "Firmware Upgrade",
     "ram_usage_percent": "RAM Usage",
-    "ethernet_rx_bytes": "Ethernet Bytes Received",
-    "ethernet_tx_bytes": "Ethernet Bytes Sent",
+    "ethernet_rx_bytes": "LAN Received Data",
+    "ethernet_tx_bytes": "LAN Transmitted Data",
+    "lan_rx_errors": "LAN Receive Errors",
+    "lan_rx_packets": "LAN Received Packets",
+    "lan_tx_errors": "LAN Transmit Errors",
+    "lan_tx_packets": "LAN Transmitted Packets",
     "wireless_rx_bytes": "Wireless Bytes Received",
     "wireless_tx_bytes": "Wireless Bytes Sent",
     "deviceId": "Device ID",
@@ -137,7 +145,7 @@ def _device_kind(key):
     if key == "uptime_seconds":
         return "main"
     # Legacy AirOS keys may call the wired interface "lan" or "eth".
-    if normalized.startswith(("ethernet_", "lan", "eth")) or normalized == "ethernet_mac":
+    if normalized.startswith(("ethernet_", "lan", "eth")) or normalized in {"ethernet_mac", "lip", "lmac", "mac", "ip_address"}:
         return "ethernet"
     return "main"
 
@@ -250,7 +258,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             continue
         # IP discovery depends on an optional SSH probe. Register the entity
         # even if the first probe fails, so it can become available on later polls.
-        if key in {"ip_address", "uptime_seconds", "ethernet_interface_state", "wireless_interface_state", "cpu_usage", "firmware_upgrade", "ram_usage_percent"} or data.get(key) not in (None, ""):
+        if key in {"ip_address", "uptime_seconds", "ethernet_interface_state", "wireless_interface_state", "cpu_usage", "firmware_upgrade", "ram_usage_percent", "lan_rx_errors", "lan_rx_packets", "lan_tx_errors", "lan_tx_packets"} or data.get(key) not in (None, ""):
             sensors.append(
                 AiRXS2Sensor(
                     coordinator, entry, key, unit, label,
@@ -260,6 +268,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
             )
             added_keys.add(key)
 
+    # Fold the raw Ethernet MAC alias into Device MAC Address to avoid a duplicate entity.
+    added_keys.add("ethernet_mac")
     # Firmware detail fields are attributes of the single Firmware Upgrade sensor,
     # not separate entities of their own.
     added_keys.update(key for key in data if key.startswith("firmware_upgrade_"))

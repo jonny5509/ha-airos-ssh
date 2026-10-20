@@ -351,6 +351,8 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 mac = re.search(r"(?:HWaddr|ether)\s+([0-9A-Fa-f:]{17})", block)
                 if mac:
                     data.setdefault(f"{prefix}_mac", mac.group(1))
+                    if is_ethernet:
+                        data.setdefault("mac", mac.group(1))
                     if is_wireless:
                         data.setdefault("wlanMac", mac.group(1))
                 ip = re.search(r"inet addr:([0-9.]+)", block)
@@ -363,10 +365,16 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 if flags:
                     state = "up" if "UP" in flags.group(1).split(",") else "down"
                     data.setdefault(f"{prefix}_interface_state", state)
+                    if is_ethernet:
+                        data["ethernet_interface_state"] = "ON" if state == "up" else "OFF"
                 elif re.search(r"(?m)^\s*UP(?:\s|$)", block):
                     data.setdefault(f"{prefix}_interface_state", "up")
+                    if is_ethernet:
+                        data["ethernet_interface_state"] = "ON"
                 elif re.search(r"(?m)^\s*DOWN(?:\s|$)", block):
                     data.setdefault(f"{prefix}_interface_state", "down")
+                    if is_ethernet:
+                        data["ethernet_interface_state"] = "OFF"
 
         elif name == "netdev":
             # Prefer physical interfaces to bridge aliases, avoiding br0 counters
@@ -378,7 +386,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 interface, stats = line.split(":", 1)
                 interface = interface.strip().lower()
                 values = stats.split()
-                if len(values) < 9:
+                if len(values) < 11:
                     continue
                 if interface.startswith(("wlan", "ath")):
                     prefix, priority = "wireless", 2
@@ -390,13 +398,26 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                     continue
                 try:
                     rx_bytes = int(values[0])
+                    rx_packets = int(values[1])
+                    rx_errors = int(values[2])
                     tx_bytes = int(values[8])
-                except (TypeError, ValueError):
+                    tx_packets = int(values[9])
+                    tx_errors = int(values[10])
+                except (TypeError, ValueError, IndexError):
                     _LOGGER.debug("Skipping malformed /proc/net/dev row: %s", line)
                     continue
                 previous = counters.get(prefix)
                 if previous is None or priority > previous[0]:
-                    counters[prefix] = (priority, rx_bytes, tx_bytes)
-            for prefix, (_, rx_bytes, tx_bytes) in counters.items():
+                    counters[prefix] = (
+                        priority, rx_bytes, rx_packets, rx_errors,
+                        tx_bytes, tx_packets, tx_errors,
+                    )
+            for prefix, values in counters.items():
+                _, rx_bytes, rx_packets, rx_errors, tx_bytes, tx_packets, tx_errors = values
                 data[f"{prefix}_rx_bytes"] = rx_bytes
                 data[f"{prefix}_tx_bytes"] = tx_bytes
+                if prefix == "ethernet":
+                    data["lan_rx_packets"] = rx_packets
+                    data["lan_rx_errors"] = rx_errors
+                    data["lan_tx_packets"] = tx_packets
+                    data["lan_tx_errors"] = tx_errors
