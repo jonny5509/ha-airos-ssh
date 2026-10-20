@@ -2,7 +2,7 @@
 
 ## What's new in v1.1.9
 
-- Removes the duplicate Ethernet RX Errors entity when the same counter is already exposed as LAN Receive Errors.
+- Removes duplicate Ethernet RX Errors and Ethernet TX Errors entities when the same counters are already exposed as LAN Receive Errors and LAN Transmit Errors.
 
 ## What's new in v1.1.8
 
