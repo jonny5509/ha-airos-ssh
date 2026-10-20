@@ -2,6 +2,13 @@
 
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
 
+## What's new in v1.1.6
+
+- Adds Ethernet receive/transmit packet and error counters.
+- Labels Ethernet byte counters as LAN Received Data and LAN Transmitted Data.
+- Exposes LAN State as ON/OFF and groups LAN/IP/MAC-related sensors under the Ethernet device.
+- Avoids a duplicate Ethernet MAC entity by using Device MAC Address.
+
 ## What's new in v1.1.5
 
 - Standardizes the device hostname sensor as `sensor.airos_hostname`.
