@@ -339,7 +339,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         elif name == "version":
             # The legacy /etc/version file often contains the full firmware build,
             # even when mca-status does not expose firmwareVersion.
-            if re.search(r"(?i)(?:XS5|NS5|NanoStation)", output) and re.search(r"\d+\.\d+\.\d+", output):
+            if re.search(r"(?i)(?:XS[25]|NS[25]|NanoStation)", output) and re.search(r"\d+\.\d+\.\d+", output):
                 data.setdefault("firmwareVersion", output.strip().splitlines()[0])
             self._identify_device(data, output)
         elif name == "board":
