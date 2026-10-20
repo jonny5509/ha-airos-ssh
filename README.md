@@ -1,5 +1,10 @@
 # Ubiquiti AirOS (SSH)
 
+## What's new in v1.2.1
+
+- Removes obsolete `sensor.airos_ethernet_ip_address` and `sensor.airos_ethernet_mac_address` entries from the Home Assistant entity registry during setup.
+- Keeps the canonical Device IP Address and Device MAC Address sensors; existing cleanup logic is retained and the integration version is aligned for the v1.2.1 release.
+
 ## What's new in v1.2.0
 
 - Standardizes user-facing wired-interface terminology to LAN in sensor labels, child-device names, model labels, and documentation.
