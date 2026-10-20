@@ -175,7 +175,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         identifiers={(DOMAIN, entry.data["host"])},
         name=display_name,
         manufacturer="Ubiquiti",
-        model=data.get("device_model") or "Ubiquiti AirOS",
+        model="NanoStation5 / airOS 4.x",
     )
 
     # Ensure the LAN child exists, then move existing LAN entities
@@ -186,7 +186,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         identifiers={(DOMAIN, f"{host}_ethernet")},
         name=f"{display_name} LAN",
         manufacturer="Ubiquiti",
-        model=f"{data.get('device_model') or 'AirOS'} LAN",
+        model="NanoStation5 / airOS 4.x LAN",
         via_device=(DOMAIN, host),
     )
 
@@ -274,14 +274,14 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # The first probe may not identify the hardware. Update the main device
     # registry entry on later coordinator refreshes once a specific model appears.
     def _update_registered_device_model():
-        detected_model = (coordinator.data or {}).get("device_model")
-        if detected_model and detected_model != "Ubiquiti AirOS":
+        canonical_model = "NanoStation5 / airOS 4.x"
+        current_device = device_registry.async_get_device(identifiers={(DOMAIN, entry.data["host"])})
             current_device = device_registry.async_get_device(
                 identifiers={(DOMAIN, entry.data["host"])}
             )
-            if current_device and current_device.model != detected_model:
+        if current_device and current_device.model != canonical_model:
                 device_registry.async_update_device(
-                    current_device.id, model=detected_model
+                current_device.id, model=canonical_model
                 )
 
     entry.async_on_unload(coordinator.async_add_listener(_update_registered_device_model))
@@ -409,9 +409,9 @@ class AiRXS2Sensor(SensorEntity):
             "identifiers": {(DOMAIN, host if self._device_kind == "main" else f"{host}_{self._device_kind}")},
             "name": self._device_name,
             "manufacturer": "Ubiquiti",
-            "model": (self.coordinator.data or {}).get("device_model") or "Ubiquiti AirOS" if self._device_kind == "main" else (
-                f"{(self.coordinator.data or {}).get('device_model') or 'AirOS'} LAN" if self._device_kind == "ethernet" else
-                f"{(self.coordinator.data or {}).get('device_model') or 'AirOS'} Wireless"
+            "model": "NanoStation5 / airOS 4.x" if self._device_kind == "main" else (
+                "NanoStation5 / airOS 4.x LAN" if self._device_kind == "ethernet" else
+                "NanoStation5 / airOS 4.x Wireless"
             ),
         }
         if self._device_kind != "main":
