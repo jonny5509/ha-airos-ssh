@@ -1,5 +1,7 @@
 # Test dependencies
-homeassistant
+# Use AsyncSSH 2.23.x to avoid its newer cryptography requirement conflicting with Home Assistant.
+homeassistant>=2025.1.0
+PyYAML>=6.0.2
 pytest
 pytest-asyncio
-asyncssh>=2.24.0
+asyncssh>=2.23.0,<2.24.0

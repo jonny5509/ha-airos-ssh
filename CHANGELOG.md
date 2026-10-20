@@ -2,6 +2,11 @@
 
 This changelog records verified changes from the available repository history. It is not a complete reconstruction of every historical release.
 
+## 2.1.8
+
+- Align the setup form's field labels, default device name, and host example with the HTTP integration.
+- Clarify the SSH connection details while retaining SSH-specific credential descriptions.
+
 ## 2.1.7
 
 - Align diagnostic sensor coverage with the HTTP integration where SSH commands expose the relevant values.
