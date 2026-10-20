@@ -2,13 +2,13 @@
 
 [![Downloads](https://img.shields.io/github/downloads/jonny5509/ha-airos-ssh/total?label=downloads)](https://github.com/jonny5509/ha-airos-ssh/releases)
 
-**Current integration version:** `2.1.6` (see `custom_components/airos_xs2/manifest.json`)
+**Current integration version:** `2.1.7` (see `custom_components/airos_xs2/manifest.json`)
 
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, NanoStation5, PowerStation2, and related hardware). This variant connects over SSH and runs read-only status commands on the radio.
 
-## What's new in v2.1.6
+## What's new in v2.1.7
 
-The integration manifest currently declares version `2.1.6`. This README documents the current feature set; consult the repository commits and releases for the exact changes included in each release.
+The integration manifest currently declares version `2.1.7`. This README documents the current feature set; consult the repository commits and releases for the exact changes included in each release.
 
 ## Previous changes
 
