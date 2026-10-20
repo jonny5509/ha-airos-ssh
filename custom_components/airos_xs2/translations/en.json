@@ -1,0 +1,29 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to a Ubiquiti AirOS device",
+        "description": "Enter the device name and SSH credentials for your AirOS device.",
+        "data": {
+          "name": "Device name",
+          "host": "Hostname or IP address",
+          "username": "SSH username",
+          "password": "SSH password"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure AirOS device",
+        "description": "Update the device name or SSH credentials.",
+        "data": {
+          "name": "Device name",
+          "host": "Hostname or IP address",
+          "username": "SSH username",
+          "password": "SSH password"
+        }
+      }
+    },
+    "abort": {
+      "reconfigure_successful": "The AirOS device was reconfigured successfully."
+    }
+  }
+}
