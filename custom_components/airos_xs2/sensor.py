@@ -348,26 +348,27 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # LAN-specific aliases as well as the canonical LAN keys. Prefer
     # the LAN Receive/Transmit Errors entities and suppress duplicate aliases.
     duplicate_ethernet_aliases = {
-        "ethernet_rx_errors": "lan_rx_errors",
-        "rx errors": "lan_rx_errors",
-        "ethernet_tx_errors": "lan_tx_errors",
-        "tx errors": "lan_tx_errors",
+        "ethernet_rx_errors": "lan_rx_errors", "rx errors": "lan_rx_errors",
+        "ethernet_tx_errors": "lan_tx_errors", "tx errors": "lan_tx_errors",
+        "rx bytes": "ethernet_rx_bytes", "tx bytes": "ethernet_tx_bytes",
+        "lan_rxbytes": "ethernet_rx_bytes", "lan_rx_bytes": "ethernet_rx_bytes",
+        "lan_txbytes": "ethernet_tx_bytes", "lan_tx_bytes": "ethernet_tx_bytes",
+        "lan_rxpackets": "lan_rx_packets", "lan_txpackets": "lan_tx_packets",
     }
     duplicate_requested_aliases = {
-        "side_devicename": "hostname",
-        "devicename": "hostname",
-        "datetime": "radio_date_time",
-        "date_time": "radio_date_time",
+        "side_devicename": "hostname", "devicename": "hostname",
+        "datetime": "radio_date_time", "date_time": "radio_date_time",
         "radio_datetime": "radio_date_time",
-        "ap_mac": "apmac",
-        "apmacaddr": "apmac",
-        "configcrc": "cfg_crc",
-        "config_crc": "cfg_crc",
-        "linkdistance": "distance",
-        "dist": "distance",
-        "lat": "latitude",
-        "lon": "longitude",
-        "lng": "longitude",
+        "ap_mac": "apmac", "apmacaddr": "apmac", "wlan_apmac": "apmac",
+        "configcrc": "cfg_crc", "config_crc": "cfg_crc", "cfgcrc": "cfg_crc",
+        "linkdistance": "distance", "dist": "distance",
+        "lat": "latitude", "lon": "longitude", "lng": "longitude",
+        "pppip": "ppp_ip", "pppaddress": "ppp_ip",
+        "ppp_rxbytes": "ppp_rx_bytes", "ppp_rxpackets": "ppp_rx_packets",
+        "ppp_rxerrors": "ppp_rx_errors", "ppp_txbytes": "ppp_tx_bytes",
+        "ppp_txpackets": "ppp_tx_packets", "ppp_txerrors": "ppp_tx_errors",
+        "wlanrxbytes": "wireless_rx_bytes", "wlantxbytes": "wireless_tx_bytes",
+        "wireless_mac": "wlanMac", "ethernet_mac": "mac",
     }
     for key, value in data.items():
         canonical_key = duplicate_ethernet_aliases.get(key.strip().lower())
