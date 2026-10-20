@@ -310,6 +310,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
         "rx errors": "lan_rx_errors",
         "ethernet_tx_errors": "lan_tx_errors",
         "tx errors": "lan_tx_errors",
+        # Keep Device IP Address (ip_address) as the canonical sensor rather
+        # than creating a duplicate Ethernet IP Address entity.
+        "ethernet_ip_address": "ip_address",
+        "ethernet_ip": "ip_address",
+        "ethernet ip address": "ip_address",
     }
     for key, value in data.items():
         canonical_key = duplicate_ethernet_aliases.get(key.strip().lower())
