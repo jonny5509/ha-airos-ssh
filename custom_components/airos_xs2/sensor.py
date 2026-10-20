@@ -353,9 +353,29 @@ async def async_setup_entry(hass, entry, async_add_entities):
         "ethernet_tx_errors": "lan_tx_errors",
         "tx errors": "lan_tx_errors",
     }
+    duplicate_requested_aliases = {
+        "side_devicename": "hostname",
+        "devicename": "hostname",
+        "datetime": "radio_date_time",
+        "date_time": "radio_date_time",
+        "radio_datetime": "radio_date_time",
+        "ap_mac": "apmac",
+        "apmacaddr": "apmac",
+        "configcrc": "cfg_crc",
+        "config_crc": "cfg_crc",
+        "linkdistance": "distance",
+        "dist": "distance",
+        "lat": "latitude",
+        "lon": "longitude",
+        "lng": "longitude",
+    }
     for key, value in data.items():
         canonical_key = duplicate_ethernet_aliases.get(key.strip().lower())
         if canonical_key and data.get(canonical_key) is not None:
+            added_keys.add(key)
+            continue
+        requested_key = duplicate_requested_aliases.get(key.strip().lower())
+        if requested_key and data.get(requested_key) not in (None, ""):
             added_keys.add(key)
             continue
         if key not in added_keys and value not in (None, ""):
