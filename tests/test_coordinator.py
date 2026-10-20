@@ -41,11 +41,25 @@ def test_parse_output_preserves_values_containing_equals():
 
 
 def test_identify_device_recognizes_nano_station_models():
-    data = {"platform": "XS2"}
+    ns2 = {"platform": "XS2"}
+    ns5 = {"platform": "XS5"}
 
-    AiRXS2Coordinator._identify_device(data)
+    AiRXS2Coordinator._identify_device(ns2)
+    AiRXS2Coordinator._identify_device(ns5)
 
-    assert data["device_model"] == "NanoStation2"
+    assert ns2["device_model"] == "NanoStation2"
+    assert ns5["device_model"] == "NanoStation5"
+
+
+def test_identify_device_does_not_classify_other_families_as_nano_station():
+    loco = {"platform": "NanoStation Loco5"}
+    powerstation = {"platform": "PowerStation2"}
+
+    AiRXS2Coordinator._identify_device(loco)
+    AiRXS2Coordinator._identify_device(powerstation)
+
+    assert loco["device_model"] != "NanoStation5"
+    assert powerstation["device_model"] != "NanoStation2"
 
 
 def test_firmware_status_compares_supported_nano_station_5_versions():
