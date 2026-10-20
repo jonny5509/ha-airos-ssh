@@ -194,7 +194,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
 
     @staticmethod
     def _identify_device(data, extra_output=""):
-        """Infer a readable model from airOS metadata and legacy system files."""
+        """Identify only original NanoStation 2/5 hardware from legacy airOS metadata."""
         identity_keys = {
             "platform", "deviceid", "board", "boardname", "board_name",
             "product", "productname", "model", "devicemodel", "hardware",
@@ -205,10 +205,16 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 parts.append(str(value))
         identity = " ".join(parts)
         compact = re.sub(r"[^a-z0-9]", "", identity.lower())
-        # Match the requested original NanoStation models before generic platform names.
-        if re.search(r"nanostation\s*2|\bns2\b|\bxs2\b", identity, re.IGNORECASE) or "nanostation2" in compact or "xs2" in compact:
+
+        # XS2/NS2 and XS5/NS5 are the original NanoStation families. Do not
+        # classify Loco, Bullet, PicoStation, or PowerStation products here.
+        if re.search(r"(?:nanostation\s*2|\bns2\b|\bxs2\b)", identity, re.IGNORECASE) or any(
+            alias in compact for alias in ("nanostation2", "ns2", "xs2")
+        ):
             data["device_model"] = "NanoStation2"
-        elif re.search(r"nanostation\s*5|\bns5\b|\bxs5\b", identity, re.IGNORECASE) or "nanostation5" in compact or "xs5" in compact:
+        elif re.search(r"(?:nanostation\s*5|\bns5\b|\bxs5\b)", identity, re.IGNORECASE) or any(
+            alias in compact for alias in ("nanostation5", "ns5", "xs5")
+        ):
             data["device_model"] = "NanoStation5"
         else:
             for key in ("platform", "deviceId", "board", "board_name", "product", "model", "cpu_model"):
