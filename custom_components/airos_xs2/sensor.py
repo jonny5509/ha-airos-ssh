@@ -17,7 +17,7 @@ OPTIONAL_SENSORS = {
     "essid": ("Wireless Network Name (SSID)", None),
     "frequency": ("Wireless Frequency", "MHz"),
     "wlanMac": ("Wireless MAC Address", None),
-    "ethernet_mac": ("Ethernet MAC Address", None),
+    "ethernet_mac": ("LAN MAC Address", None),
     "ethernet_interface_state": ("LAN State", None),
     "wireless_interface_state": ("Wireless Interface State", None),
     "wireless_mac": ("Wireless MAC Address", None),
@@ -79,7 +79,7 @@ SENSOR_NAME_OVERRIDES = {
     "wlanRxRate": "Wireless Receive Rate",
     "wlanMac": "Wireless MAC Address",
     "wireless_mac": "Wireless MAC Address",
-    "ethernet_mac": "Ethernet MAC Address",
+    "ethernet_mac": "LAN MAC Address",
     "ethernet_interface_state": "LAN State",
     "wireless_interface_state": "Wireless Interface State",
     "mac": "Device MAC Address",
@@ -115,7 +115,7 @@ def _friendly_name(key):
     if key in SENSOR_NAME_OVERRIDES:
         return SENSOR_NAME_OVERRIDES[key]
 
-    # Older AirOS firmware may expose Ethernet counters using display labels
+    # Older AirOS firmware may expose LAN counters using display labels
     # instead of stable machine-readable keys.
     legacy_ethernet_names = {
         "plugged": "LAN Link Status",
@@ -139,7 +139,7 @@ def _friendly_name(key):
         if lower in {"wlan", "wireless", "wifi"}:
             normalized.append("Wireless")
         elif lower in {"lan", "ethernet", "eth"}:
-            normalized.append("Ethernet")
+            normalized.append("LAN")
         elif lower in {"mac", "ip", "cpu", "ccq", "snr", "ssid", "tx", "rx", "mhz", "dbm", "id", "url", "ram"}:
             normalized.append(lower.upper())
         else:
@@ -178,15 +178,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
         model=data.get("device_model") or "Ubiquiti AirOS",
     )
 
-    # Ensure the Ethernet child exists, then move existing Ethernet entities
+    # Ensure the LAN child exists, then move existing LAN entities
     # back under it. This preserves entity IDs and their history after upgrades.
     host = entry.data["host"]
     ethernet_device = device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
         identifiers={(DOMAIN, f"{host}_ethernet")},
-        name=f"{display_name} Ethernet",
+        name=f"{display_name} LAN",
         manufacturer="Ubiquiti",
-        model=f"{data.get('device_model') or 'AirOS'} Ethernet",
+        model=f"{data.get('device_model') or 'AirOS'} LAN",
         via_device=(DOMAIN, host),
     )
     entity_registry = er.async_get(hass)
@@ -210,9 +210,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 entity.entity_id, new_entity_id=hostname_entity_id
             )
 
-    # Remove obsolete Ethernet-specific IP/MAC entities. The integration
+    # Remove obsolete LAN-specific IP/MAC entities. The integration
     # keeps the canonical Device IP Address and Device MAC Address sensors,
-    # so these legacy Ethernet aliases would be redundant.
+    # so these legacy LAN aliases would be redundant.
     obsolete_ethernet_entity_ids = {
         "sensor.airos_ethernet_ip_address",
         "sensor.airos_ethernet_mac_address",
@@ -294,7 +294,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             )
             added_keys.add(key)
 
-    # Fold the raw Ethernet MAC alias into Device MAC Address to avoid a duplicate entity.
+    # Fold the raw LAN MAC alias into Device MAC Address to avoid a duplicate entity.
     added_keys.add("ethernet_mac")
     # Firmware detail fields are attributes of the single Firmware Upgrade sensor,
     # not separate entities of their own.
@@ -303,7 +303,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     added_keys.update({"mem_total_bytes", "mem_free_bytes", "mem_available_bytes"})
 
     # Older AirOS output may expose the same RX/TX error counters under
-    # Ethernet-specific aliases as well as the canonical LAN keys. Prefer
+    # LAN-specific aliases as well as the canonical LAN keys. Prefer
     # the LAN Receive/Transmit Errors entities and suppress duplicate aliases.
     duplicate_ethernet_aliases = {
         "ethernet_rx_errors": "lan_rx_errors",
@@ -352,7 +352,7 @@ class AiRXS2Sensor(SensorEntity):
         self._device_kind = device_kind
         self._parent_device_id = parent_device_id
         if device_kind == "ethernet":
-            self._device_name = f"{self._display_name} Ethernet"
+            self._device_name = f"{self._display_name} LAN"
         elif device_kind == "wireless":
             self._device_name = f"{self._display_name} Wireless"
         else:
@@ -391,7 +391,7 @@ class AiRXS2Sensor(SensorEntity):
             "name": self._device_name,
             "manufacturer": "Ubiquiti",
             "model": (self.coordinator.data or {}).get("device_model") or "Ubiquiti AirOS" if self._device_kind == "main" else (
-                f"{(self.coordinator.data or {}).get('device_model') or 'AirOS'} Ethernet" if self._device_kind == "ethernet" else
+                f"{(self.coordinator.data or {}).get('device_model') or 'AirOS'} LAN" if self._device_kind == "ethernet" else
                 f"{(self.coordinator.data or {}).get('device_model') or 'AirOS'} Wireless"
             ),
         }
