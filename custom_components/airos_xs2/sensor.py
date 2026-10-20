@@ -274,15 +274,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # The first probe may not identify the hardware. Update the main device
     # registry entry on later coordinator refreshes once a specific model appears.
     def _update_registered_device_model():
+        """Keep the model label consistent with the HTTP integration."""
         canonical_model = "NanoStation5 / airOS 4.x"
-        current_device = device_registry.async_get_device(identifiers={(DOMAIN, entry.data["host"])})
-            current_device = device_registry.async_get_device(
-                identifiers={(DOMAIN, entry.data["host"])}
-            )
+        current_device = device_registry.async_get_device(
+            identifiers={(DOMAIN, entry.data["host"])}
+        )
         if current_device and current_device.model != canonical_model:
-                device_registry.async_update_device(
+            device_registry.async_update_device(
                 current_device.id, model=canonical_model
-                )
+            )
 
     entry.async_on_unload(coordinator.async_add_listener(_update_registered_device_model))
 
