@@ -115,6 +115,20 @@ def _friendly_name(key):
     if key in SENSOR_NAME_OVERRIDES:
         return SENSOR_NAME_OVERRIDES[key]
 
+    # Older AirOS firmware may expose Ethernet counters using display labels
+    # instead of stable machine-readable keys.
+    legacy_ethernet_names = {
+        "plugged": "LAN Link Status",
+        "rx bytes": "LAN Received Data",
+        "rx errors": "LAN Receive Errors",
+        "rx packets": "LAN Received Packets",
+        "tx bytes": "LAN Transmitted Data",
+        "tx errors": "LAN Transmit Errors",
+        "tx packets": "LAN Transmitted Packets",
+    }
+    if key.strip().lower() in legacy_ethernet_names:
+        return legacy_ethernet_names[key.strip().lower()]
+
     # Convert camelCase and separators into words before applying protocol terms.
     name = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", key)
     name = re.sub(r"[_-]+", " ", name).strip()
