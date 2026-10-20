@@ -210,17 +210,19 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 entity.entity_id, new_entity_id=hostname_entity_id
             )
 
-    # Remove obsolete LAN-specific IP/MAC entities. The integration
-    # keeps the canonical Device IP Address and Device MAC Address sensors,
-    # so these legacy LAN aliases would be redundant.
+    # Remove obsolete LAN-specific IP/MAC entities belonging to this
+    # config entry. Keep the canonical Device IP Address and Device MAC
+    # Address sensors, which replace these legacy aliases.
     obsolete_ethernet_entity_ids = {
         "sensor.airos_ethernet_ip_address",
         "sensor.airos_ethernet_mac_address",
     }
-    for entity_id in obsolete_ethernet_entity_ids:
-        entity = entity_registry.async_get(entity_id)
-        if entity is not None and entity.config_entry_id == entry.entry_id:
-            entity_registry.async_remove(entity_id)
+    for entity in list(entity_registry.entities.values()):
+        if (
+            entity.config_entry_id == entry.entry_id
+            and entity.entity_id in obsolete_ethernet_entity_ids
+        ):
+            entity_registry.async_remove(entity.entity_id)
 
     # Remove registry entries left behind by older releases that exposed raw
     # memory counters as individual sensors. These keys are now attributes on
