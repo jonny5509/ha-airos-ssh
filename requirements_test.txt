@@ -1,5 +1,7 @@
 # Test dependencies
-homeassistant
+# Avoid legacy Home Assistant releases whose pinned PyYAML cannot build on Python 3.13.
+homeassistant>=2025.1.0
+PyYAML>=6.0.2
 pytest
 pytest-asyncio
 asyncssh>=2.24.0
