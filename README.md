@@ -1,5 +1,10 @@
 # Ubiquiti AirOS (SSH)
 
+## What's new in v1.1.9
+
+- Removes duplicate Ethernet RX Errors and Ethernet TX Errors entities when the same counters are already exposed as LAN Receive Errors and LAN Transmit Errors.
+- Removes obsolete Ethernet-specific IP and MAC entities while retaining the canonical Device IP Address and Device MAC Address sensors.
+
 ## What's new in v1.1.8
 
 - Migrates the Ethernet IP sensor to `sensor.airos_device_ip_address`.
