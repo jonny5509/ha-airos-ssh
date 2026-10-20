@@ -190,6 +190,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         via_device=(DOMAIN, host),
     )
 
+    entity_registry = er.async_get(hass)
+
     # Remove obsolete per-interface devices left by earlier integration builds.
     interface_prefix = f"{display_name} Interface "
     for old_device in list(device_registry.devices.values()):
