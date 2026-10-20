@@ -29,6 +29,14 @@ OPTIONAL_SENSORS = {
     "cpu_model": ("CPU Model", None),
     "cpu_usage": ("CPU Usage", "%"),
     "firmware_upgrade": ("Firmware Upgrade", None),
+    "apmac": ("AP MAC", None), "cfg_crc": ("Cfg CRC", None),
+    "device_model": ("Device Model", None), "distance": ("Distance", None),
+    "ack_timeout": ("Ack Timeout", None), "latitude": ("Latitude", None),
+    "longitude": ("Longitude", None), "radio_date_time": ("Radio Date and Time", None),
+    "ppp_ip": ("PPP IP Address", None), "ppp_rx_errors": ("PPP Receive Errors", None),
+    "ppp_rx_bytes": ("PPP Received Data", "B"), "ppp_rx_packets": ("PPP Received Packets", None),
+    "ppp_tx_errors": ("PPP Transmit Errors", None), "ppp_tx_bytes": ("PPP Transmitted Data", "B"),
+    "ppp_tx_packets": ("PPP Transmitted Packets", None),
     "ram_usage_percent": ("RAM Usage", "%"),
     "ethernet_rx_bytes": ("LAN Received Data", "B"),
     "ethernet_tx_bytes": ("LAN Transmitted Data", "B"),
@@ -107,6 +115,13 @@ SENSOR_NAME_OVERRIDES = {
     "firmwareVersion": "Firmware Version",
     "platform": "Platform",
     "deviceIp": "Configured Device IP Address",
+    "apmac": "AP MAC", "cfg_crc": "Cfg CRC", "device_model": "Device Model",
+    "distance": "Distance", "ack_timeout": "Ack Timeout", "latitude": "Latitude",
+    "longitude": "Longitude", "radio_date_time": "Radio Date and Time",
+    "ppp_ip": "PPP IP Address", "ppp_rx_errors": "PPP Receive Errors",
+    "ppp_rx_bytes": "PPP Received Data", "ppp_rx_packets": "PPP Received Packets",
+    "ppp_tx_errors": "PPP Transmit Errors", "ppp_tx_bytes": "PPP Transmitted Data",
+    "ppp_tx_packets": "PPP Transmitted Packets",
 }
 
 
@@ -150,6 +165,14 @@ def _friendly_name(key):
 def _device_kind(key):
     """Return the Home Assistant device that should own this sensor."""
     normalized = key.lower()
+    # Keep the requested diagnostics on the main radio device in both transports.
+    if key in {"signal","noise","wlanTxRate","wlanRxRate","frequency","apmac","cfg_crc",
+        "device_model","distance","ack_timeout","latitude","longitude","radio_date_time",
+        "ppp_ip","ppp_rx_errors","ppp_rx_bytes","ppp_rx_packets","ppp_tx_errors",
+        "ppp_tx_bytes","ppp_tx_packets","mac","hostname","uptime_seconds","cpu_model",
+        "cpu_usage","ram_usage_percent","firmware_upgrade","deviceId","firmwareVersion",
+        "platform","deviceIp"}:
+        return "main"
     # Check WLAN first because "lan" is also present inside "wlan".
     if normalized.startswith(("wlan", "wireless_")) or key in BASE_SENSORS or key in {
         "essid", "frequency", "wireless_mac", "wireless_interface_state", "mode",

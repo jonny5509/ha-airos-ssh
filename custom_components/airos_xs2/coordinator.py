@@ -145,7 +145,23 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 data.setdefault("side_devicename", data[key])
                 data.pop(key, None)
 
-        # Identify hardware from metadata commonly exposed by different airOS builds.
+        # Canonicalise firmware-specific spellings into stable main-device sensors.
+        lookup = {re.sub(r"[^a-z0-9]", "", str(k).lower()): v for k, v in data.items()}
+        aliases = {
+            "apmac": ("apmac","ap_mac","apmacaddr","wlan_apmac"),
+            "cfg_crc": ("cfgcrc","cfg_crc","configcrc","config_crc"),
+            "distance": ("distance","linkdistance","dist"),
+            "ack_timeout": ("acktimeout","ack_timeout","ack"),
+            "latitude": ("latitude","lat"), "longitude": ("longitude","lon","lng"),
+            "radio_date_time": ("datetime","radio_datetime","date_time","radio_date_time"),
+            "ppp_ip": ("pppip","ppp_ip","pppaddress"),
+        }
+        for target, candidates in aliases.items():
+            for candidate in candidates:
+                value = lookup.get(re.sub(r"[^a-z0-9]", "", candidate))
+                if value not in (None, ""):
+                    data.setdefault(target, value)
+                    break
         self._identify_device(data, output)
 
         # Expose only one canonical uptime sensor, populated by the procfs probe.
@@ -344,10 +360,10 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 interface = heading.group(1).lower()
                 is_wireless = interface.startswith(("wlan", "ath"))
                 is_ethernet = interface.startswith(("eth", "br"))
-                if not (is_wireless or is_ethernet):
+                is_ppp = interface.startswith("ppp")
+                if not (is_wireless or is_ethernet or is_ppp):
                     continue
-
-                prefix = "wireless" if is_wireless else "ethernet"
+                prefix = "wireless" if is_wireless else ("ppp" if is_ppp else "ethernet")
                 mac = re.search(r"(?:HWaddr|ether)\s+([0-9A-Fa-f:]{17})", block)
                 if mac:
                     data.setdefault(f"{prefix}_mac", mac.group(1))
@@ -360,6 +376,8 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                     ip = re.search(r"\binet ([0-9.]+)", block)
                 if ip:
                     data.setdefault("ip_address", ip.group(1))
+                    if is_ppp:
+                        data.setdefault("ppp_ip", ip.group(1))
 
                 flags = re.search(r"<([^>]+)>", block)
                 if flags:
@@ -390,6 +408,8 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                     continue
                 if interface.startswith(("wlan", "ath")):
                     prefix, priority = "wireless", 2
+                elif interface.startswith("ppp"):
+                    prefix, priority = "ppp", 2
                 elif interface.startswith("eth"):
                     prefix, priority = "ethernet", 2
                 elif interface.startswith("br"):
@@ -421,3 +441,10 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                     data["lan_rx_errors"] = rx_errors
                     data["lan_tx_packets"] = tx_packets
                     data["lan_tx_errors"] = tx_errors
+                elif prefix == "ppp":
+                    data["ppp_rx_bytes"] = rx_bytes
+                    data["ppp_rx_packets"] = rx_packets
+                    data["ppp_rx_errors"] = rx_errors
+                    data["ppp_tx_bytes"] = tx_bytes
+                    data["ppp_tx_packets"] = tx_packets
+                    data["ppp_tx_errors"] = tx_errors
