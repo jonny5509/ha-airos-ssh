@@ -1,5 +1,11 @@
 # Ubiquiti AirOS (SSH)
 
+## What's new in v1.1.7
+
+- Removes the device model/name prefix (for example, `NanoStation5`) from sensor display names while retaining device grouping and the device name itself.
+- Gives legacy Ethernet fields clear LAN names, including link status, received/transmitted data, packets, and errors.
+
+
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
 
 ## What's new in v1.1.6
