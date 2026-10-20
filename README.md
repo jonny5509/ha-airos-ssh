@@ -2,7 +2,7 @@
 
 [![Downloads](https://img.shields.io/github/downloads/jonny5509/ha-airos-ssh/total?label=downloads)](https://github.com/jonny5509/ha-airos-ssh/releases)
 
-**Version:** 2.1.9  
+**Version:** 2.2.0  
 **Transport:** SSH  
 **Repository:** https://github.com/jonny5509/ha-airos-ssh
 
