@@ -198,7 +198,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         identifiers={(DOMAIN, entry.data["host"])},
         name=display_name,
         manufacturer="Ubiquiti",
-        model="NanoStation5 / airOS 4.x",
+        model="Original airOS 3.x–4.x",
     )
 
     # Ensure the LAN child exists, then move existing LAN entities
@@ -209,7 +209,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         identifiers={(DOMAIN, f"{host}_ethernet")},
         name=f"{display_name} LAN",
         manufacturer="Ubiquiti",
-        model="NanoStation5 / airOS 4.x LAN",
+        model="Original airOS 3.x–4.x LAN",
         via_device=(DOMAIN, host),
     )
 
