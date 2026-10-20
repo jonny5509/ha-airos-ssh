@@ -5,11 +5,16 @@ from .const import DOMAIN
 
 def _device_schema(data=None):
     data = data or {}
-    host_field = vol.Required(
-        "host",
-        default=data.get("host", vol.UNDEFINED),
-        description={"suggested_value": "192.168.1.20"} if not data else {},
-    )
+    if data:
+        host_field = vol.Required(
+            "host", default=data.get("host", vol.UNDEFINED)
+        )
+    else:
+        host_field = vol.Required(
+            "host",
+            description={"suggested_value": "192.168.1.20"},
+        )
+
     return vol.Schema(
         {
             vol.Required("name", default=data.get("name", "NanoStation5")): str,
