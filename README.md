@@ -2,6 +2,11 @@
 
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
 
+## What's new in v1.1.5
+
+- Standardizes the device hostname sensor as `sensor.airos_hostname`.
+- Migrates existing `side_devicename` / `devicename` entity IDs to the canonical hostname entity ID when it is available, while preserving the entity unique ID.
+
 ## Features
 
 - SSH polling of `mca-status`
