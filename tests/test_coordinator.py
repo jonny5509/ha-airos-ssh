@@ -62,6 +62,20 @@ def test_identify_device_does_not_classify_other_families_as_nano_station():
     assert powerstation["device_model"] != "NanoStation2"
 
 
+def test_version_probe_recognises_legacy_air_os_3_and_4_build_strings():
+    coordinator = object.__new__(AiRXS2Coordinator)
+    ns2 = {}
+    ns5 = {}
+
+    coordinator._parse_probe("version", "XS2.ar2316.v3.7.1.4856.090213.2225", ns2)
+    coordinator._parse_probe("version", "XS5.ar2313.v4.0.4.5074.150724.1344", ns5)
+
+    assert ns2["device_model"] == "NanoStation2"
+    assert ns5["device_model"] == "NanoStation5"
+    assert ns2["firmwareVersion"].startswith("XS2.ar2316.v3.7.1")
+    assert ns5["firmwareVersion"].startswith("XS5.ar2313.v4.0.4")
+
+
 def test_firmware_status_compares_supported_nano_station_5_versions():
     older = {"device_model": "NanoStation5", "firmwareVersion": "v4.0.3"}
     current = {"device_model": "NanoStation5", "firmwareVersion": "v4.0.4.5074"}
