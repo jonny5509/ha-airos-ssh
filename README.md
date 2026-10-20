@@ -24,7 +24,8 @@ Sensor availability depends on the radio model, firmware, and commands or counte
 - Intended specifically for the original NanoStation 2 (NS2/XS2) and NanoStation 5 (NS5/XS5) with airOS 3.x–4.x.
 - Other product families, including NanoStation Loco, Bullet, PicoStation, and PowerStation, are outside the supported scope.
 - Uses `mca-status` and additional legacy BusyBox/procfs commands where available.
-- May require legacy SSH key-exchange, cipher, or host-key algorithms for older firmware.
+- Automated tests cover NS2/NS5 identity and representative airOS 3.x/4.x version strings; optional command availability varies by firmware.
+- May require legacy SSH key-exchange, cipher, or host-key algorithms for older firmware. Physical-radio testing across every firmware build has not been completed.
 
 ## Installation
 
