@@ -151,7 +151,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
             "apmac": ("apmac","ap_mac","apmacaddr","wlan_apmac"),
             "cfg_crc": ("cfgcrc","cfg_crc","configcrc","config_crc"),
             "distance": ("distance","linkdistance","dist"),
-            "ack_timeout": ("acktimeout","ack_timeout","ack"),
+            "ack_timeout": ("acktimeout","ack_timeout"),
             "latitude": ("latitude","lat"), "longitude": ("longitude","lon","lng"),
             "radio_date_time": ("datetime","radio_datetime","date_time","radio_date_time"),
             "ppp_ip": ("pppip","ppp_ip","pppaddress"),
