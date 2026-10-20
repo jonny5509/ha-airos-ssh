@@ -1,16 +1,6 @@
 # Ubiquiti AirOS (SSH)
 
-[![Downloads](https://img.shields.io/github/downloads/jonny5509/ha-airos-ssh/total?label=downloads)](https://github.com/jonny5509/ha-airos-ssh/releases) [![Version](https://img.shields.io/github/v/release/jonny5509/ha-airos-ssh?display_name=tag&sort=semver)](https://github.com/jonny5509/ha-airos-ssh/releases/latest) [![HACS Compatible](https://img.shields.io/badge/HACS-Compatible-41BDF5.svg)](https://hacs.xyz/)
-
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
-
-## What's new in 2.2.1
-
-- Documents troubleshooting for Home Assistant's `Integration 'airos_xs2' not found` error.
-- Clarifies the required custom component directory layout and restart steps.
-- Bumps the integration manifest version to `2.2.1`.
-
-**Important:** The `airos_xs2` domain already matches the current manifest and Python code. This error usually means Home Assistant cannot discover the installed files, so upgrading alone will not repair a missing or incorrectly nested installation. Follow the troubleshooting steps below.
 
 ## Features
 
@@ -26,10 +16,9 @@ Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation
 ## Installation (manual)
 
 1. Download this repository.
-2. Copy the `custom_components/airos_xs2` directory into your Home Assistant `/config/custom_components/` directory. The final path must be `/config/custom_components/airos_xs2/manifest.json`.
-3. Make sure `manifest.json` is directly inside `airos_xs2` (not inside a second nested `custom_components/airos_xs2` directory).
-4. Restart Home Assistant.
-5. Go to **Settings → Devices & Services → Add Integration** and select **Ubiquiti AirOS (SSH)**.
+2. Copy `custom_components/airos_xs2` into your Home Assistant `/config/custom_components/` directory.
+3. Restart Home Assistant.
+4. Go to **Settings → Devices & Services → Add Integration** and select **Ubiquiti AirOS (SSH)**.
 
 ## Installation (HACS)
 
@@ -38,25 +27,6 @@ Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation
 3. Select **Integration** as the category.
 4. Install the integration and restart Home Assistant.
 5. Add it from **Settings → Devices & Services → Add Integration**.
-
-## Troubleshooting: “Integration 'airos_xs2' not found”
-
-This error means Home Assistant cannot discover the custom integration. The integration domain is `airos_xs2`; it must match both the directory name and the `domain` field in `manifest.json`.
-
-1. Check that `/config/custom_components/airos_xs2/manifest.json` exists.
-2. Check that the manifest contains `"domain": "airos_xs2"`.
-3. If using HACS, confirm the download completed, then restart Home Assistant (not just reload the integration).
-4. If installing manually, copy the repository's `custom_components/airos_xs2` directory itself, not the repository root or a nested directory.
-5. If the integration was previously installed under a different name or was deleted, remove the stale entry from **Settings → Devices & Services** after the integration is discoverable again, or restore the integration files and restart before removing the entry.
-
-Useful terminal checks:
-
-```bash
-ls -la /config/custom_components/airos_xs2/
-cat /config/custom_components/airos_xs2/manifest.json
-```
-
-If the files and domain are correct but Home Assistant still reports the integration as missing, check the startup logs for a manifest parsing error or a Python import error. A missing-integration message alone does not identify a code defect: Home Assistant must first be able to see the integration files on disk.
 
 ## Branding
 
