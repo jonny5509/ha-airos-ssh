@@ -1,30 +1,36 @@
 # Ubiquiti AirOS (SSH)
 
+## What's new in v1.2.0
+
+- Standardizes wired-interface display names and documentation on **LAN** instead of mixing LAN and Ethernet terminology.
+- Keeps internal sensor keys and entity unique IDs unchanged to preserve existing Home Assistant entities and history.
+
+
 ## What's new in v1.1.9
 
-- Removes duplicate Ethernet RX Errors and Ethernet TX Errors entities when the same counters are already exposed as LAN Receive Errors and LAN Transmit Errors.
-- Removes obsolete Ethernet-specific IP and MAC entities while retaining the canonical Device IP Address and Device MAC Address sensors.
+- Removes duplicate LAN RX Errors and LAN TX Errors entities when the same counters are already exposed as LAN Receive Errors and LAN Transmit Errors.
+- Removes obsolete LAN-specific IP and MAC entities while retaining the canonical Device IP Address and Device MAC Address sensors.
 
 ## What's new in v1.1.8
 
-- Migrates the Ethernet IP sensor to `sensor.airos_device_ip_address`.
-- Migrates the Ethernet MAC sensor to `sensor.nanostation5_ethernet_nanostation5_device_mac_address`.
+- Migrates the LAN IP sensor to `sensor.airos_device_ip_address`.
+- Migrates the LAN MAC sensor to `sensor.nanostation5_ethernet_nanostation5_device_mac_address`.
 
 
 ## What's new in v1.1.7
 
 - Removes the device model/name prefix (for example, `NanoStation5`) from sensor display names while retaining device grouping and the device name itself.
-- Gives legacy Ethernet fields clear LAN names, including link status, received/transmitted data, packets, and errors.
+- Gives legacy LAN fields clear LAN names, including link status, received/transmitted data, packets, and errors.
 
 
 Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation2, PowerStation2, etc).
 
 ## What's new in v1.1.6
 
-- Adds Ethernet receive/transmit packet and error counters.
-- Labels Ethernet byte counters as LAN Received Data and LAN Transmitted Data.
-- Exposes LAN State as ON/OFF and groups LAN/IP/MAC-related sensors under the Ethernet device.
-- Avoids a duplicate Ethernet MAC entity by using Device MAC Address.
+- Adds LAN receive/transmit packet and error counters.
+- Labels LAN byte counters as LAN Received Data and LAN Transmitted Data.
+- Exposes LAN State as ON/OFF and groups LAN/IP/MAC-related sensors under the LAN device.
+- Avoids a duplicate LAN MAC entity by using Device MAC Address.
 
 ## What's new in v1.1.5
 
@@ -37,7 +43,7 @@ Home Assistant custom integration for legacy Ubiquiti AirOS devices (NanoStation
 - Signal, Noise, CCQ, SNR
 - TX/RX rate monitoring
 - Exposes additional `mca-status` key/value fields as sensors
-- Best-effort uptime, memory, load average, CPU model, IP/MAC, and Ethernet/wireless byte counters
+- Best-effort uptime, memory, load average, CPU model, IP/MAC, and LAN/wireless byte counters
 - Reboot switch
 - Config Flow (UI install)
 - HACS compatible
