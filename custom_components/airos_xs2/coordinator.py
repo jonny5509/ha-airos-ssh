@@ -211,11 +211,11 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         if re.search(r"(?:nanostation\s*2|\bns2\b|\bxs2\b)", identity, re.IGNORECASE) or any(
             alias in compact for alias in ("nanostation2", "ns2", "xs2")
         ):
-            data["device_model"] = "NanoStation 2"
+            data["device_model"] = "NanoStation2"
         elif re.search(r"(?:nanostation\s*5|\bns5\b|\bxs5\b)", identity, re.IGNORECASE) or any(
             alias in compact for alias in ("nanostation5", "ns5", "xs5")
         ):
-            data["device_model"] = "NanoStation 5"
+            data["device_model"] = "NanoStation5"
         else:
             for key in ("platform", "deviceId", "board", "board_name", "product", "model", "cpu_model"):
                 value = data.get(key)
@@ -231,7 +231,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         data["firmware_upgrade_latest_version"] = "4.0.4.5074"
         data["firmware_upgrade_source"] = "https://ui.com/download/airmax-legacy"
 
-        if data.get("device_model") != "NanoStation 5":
+        if data.get("device_model") != "NanoStation5":
             data["firmware_upgrade"] = "Unknown"
             data["firmware_upgrade_reason"] = "No verified firmware catalog entry for this device model."
             return
