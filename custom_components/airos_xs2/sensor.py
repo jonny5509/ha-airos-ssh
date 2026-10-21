@@ -420,14 +420,24 @@ async def async_setup_entry(hass, entry, async_add_entities):
         "ethernet_tx_errors": "lan_tx_errors", "tx errors": "lan_tx_errors",
         "rx bytes": "ethernet_rx_bytes", "tx bytes": "ethernet_tx_bytes",
         "lan_rxbytes": "ethernet_rx_bytes", "lan_rx_bytes": "ethernet_rx_bytes",
+        "lan rx bytes": "ethernet_rx_bytes", "rx bytes": "ethernet_rx_bytes",
         "lan_txbytes": "ethernet_tx_bytes", "lan_tx_bytes": "ethernet_tx_bytes",
-        "lan_rxpackets": "lan_rx_packets", "lan_txpackets": "lan_tx_packets",
+        "lan tx bytes": "ethernet_tx_bytes", "tx bytes": "ethernet_tx_bytes",
+        "lan_rxerrors": "lan_rx_errors", "lan_rx_errors": "lan_rx_errors",
+        "lan rx errors": "lan_rx_errors", "rx errors": "lan_rx_errors",
+        "lan_txerrors": "lan_tx_errors", "lan_tx_errors": "lan_tx_errors",
+        "lan tx errors": "lan_tx_errors", "tx errors": "lan_tx_errors",
+        "lan_rxpackets": "lan_rx_packets", "lan_rx_packets": "lan_rx_packets",
+        "lan rx packets": "lan_rx_packets", "rx packets": "lan_rx_packets",
+        "lan_txpackets": "lan_tx_packets", "lan_tx_packets": "lan_tx_packets",
+        "lan tx packets": "lan_tx_packets", "tx packets": "lan_tx_packets",
     }
     duplicate_requested_aliases = {
         "side_devicename": "hostname", "devicename": "hostname",
         "datetime": "radio_date_time", "date_time": "radio_date_time",
         "radio_datetime": "radio_date_time",
-        "ap_mac": "apmac", "apmacaddr": "apmac", "wlan_apmac": "apmac",
+        "ap_mac": "apmac", "ap mac": "apmac", "apmacaddr": "apmac", "wlan_apmac": "apmac",
+        "ack timeout": "ack_timeout", "config crc": "cfg_crc", "cfg crc": "cfg_crc",
         "configcrc": "cfg_crc", "config_crc": "cfg_crc", "cfgcrc": "cfg_crc",
         "linkdistance": "distance", "dist": "distance",
         "lat": "latitude", "lon": "longitude", "lng": "longitude",
@@ -457,6 +467,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
             )
 
     for key, value in metadata.items():
+        # Some legacy AirOS device-name metadata repeats values already
+        # exposed by live sensors. Avoid showing the same IP/MAC twice.
+        if key == "deviceId" and value == str(data.get("mac", "")):
+            continue
+        if key == "deviceIp" and value == str(data.get("ip_address", "")):
+            continue
         label, unit = DEVICE_METADATA[key]
         sensors.append(
             AiRXS2Sensor(
