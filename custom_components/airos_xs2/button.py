@@ -1,6 +1,7 @@
 """Maintenance controls for legacy airOS devices over SSH."""
 import asyncssh
 from homeassistant.components.button import ButtonEntity
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -9,6 +10,13 @@ from .const import DOMAIN, device_identifier
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
+    # Remove the legacy reboot switch registry entry after migrating to a button.
+    entity_registry = er.async_get(hass)
+    legacy_unique_ids = {f"{entry.data['host']}_reboot", f"{device_identifier(entry.data['host'])}_reboot"}
+    for entity in list(entity_registry.entities.values()):
+        if (entity.config_entry_id == entry.entry_id and entity.domain == "switch"
+                and entity.unique_id in legacy_unique_ids):
+            entity_registry.async_remove(entity.entity_id)
     async_add_entities([AirOSRebootButton(coordinator, entry)])
 
 
