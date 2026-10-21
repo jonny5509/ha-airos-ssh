@@ -521,9 +521,11 @@ class AiRXS2Sensor(SensorEntity):
             "identifiers": {(DOMAIN, device_identifier(host) if self._device_kind == "main" else f"{device_identifier(host)}_{self._device_kind}")},
             "name": self._device_name,
             "manufacturer": "Ubiquiti",
-            "model": ((self.coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x") if self._device_kind == "main" else (
-                "Original airOS 3.x–4.x LAN" if self._device_kind == "lan" else
-                "Original airOS 3.x–4.x Wireless"
+            "model": (
+                (self.coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x"
+            ) if self._device_kind == "main" else (
+                ((self.coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x")
+                + (" LAN" if self._device_kind == "lan" else " Wireless")
             ),
         }
         if self._device_kind != "main":
