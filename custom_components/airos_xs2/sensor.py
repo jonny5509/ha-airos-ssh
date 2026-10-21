@@ -91,7 +91,7 @@ SENSOR_NAME_OVERRIDES = {
     "ethernet_interface_state": "LAN State",
     "wireless_interface_state": "Wireless Interface State",
     "mac": "Device MAC Address",
-    "essid": "Wireless Network Name (SSID)",
+    "essid": "Wireless Network Name",
     "frequency": "Wireless Frequency",
     "mode": "Wireless Mode",
     "hostname": "Hostname",
@@ -109,8 +109,47 @@ SENSOR_NAME_OVERRIDES = {
     "lan_rx_packets": "LAN Received Packets",
     "lan_tx_errors": "LAN Transmit Errors",
     "lan_tx_packets": "LAN Transmitted Packets",
-    "wireless_rx_bytes": "Wireless Bytes Received",
-    "wireless_tx_bytes": "Wireless Bytes Sent",
+    "wireless_rx_bytes": "Wireless Received Data",
+    "wireless_tx_bytes": "Wireless Transmitted Data",
+    "wip": "Wireless IP Address",
+    "wlan_ip_address": "Wireless IP Address",
+    "wmac": "Wireless MAC Address",
+    "lmac": "LAN MAC Address",
+    "lip": "LAN IP Address",
+    "lan_ip_address": "LAN IP Address",
+    "lan_mac_address": "LAN MAC Address",
+    "lan_plugged": "LAN Link Status",
+    "plugged": "LAN Link Status",
+    "lan_rxbytes": "LAN Received Data",
+    "lan_rx_bytes": "LAN Received Data",
+    "lan_rxpackets": "LAN Received Packets",
+    "lan_rx_packets": "LAN Received Packets",
+    "lan_rxerrors": "LAN Receive Errors",
+    "lan_rx_errors": "LAN Receive Errors",
+    "lan_txbytes": "LAN Transmitted Data",
+    "lan_tx_bytes": "LAN Transmitted Data",
+    "lan_txpackets": "LAN Transmitted Packets",
+    "lan_tx_packets": "LAN Transmitted Packets",
+    "lan_txerrors": "LAN Transmit Errors",
+    "lan_tx_errors": "LAN Transmit Errors",
+    "wlan_rxbytes": "Wireless Received Data",
+    "wlan_rxpackets": "Wireless Received Packets",
+    "wlan_rxerrors": "Wireless Receive Errors",
+    "wlan_txbytes": "Wireless Transmitted Data",
+    "wlan_txpackets": "Wireless Transmitted Packets",
+    "wlan_txerrors": "Wireless Transmit Errors",
+    "channel": "Wireless Channel",
+    "security": "Wireless Security",
+    "qos": "Wireless QoS",
+    "antenna": "Antenna Polarization",
+    "ack": "ACK Distance",
+    "rstatus": "Wireless Radio Status Code",
+    "err_nwids": "Wireless Invalid Network IDs",
+    "err_crypts": "Wireless Crypto Errors",
+    "err_frags": "Wireless Fragment Errors",
+    "err_retries": "Wireless Retries",
+    "err_beacons": "Wireless Beacon Errors",
+    "err_misc": "Wireless Other Errors",
     "deviceId": "Device ID",
     "firmwareVersion": "Firmware Version",
     "platform": "Platform",
@@ -182,8 +221,8 @@ def _device_kind(key):
     if key == "uptime_seconds":
         return "main"
     # Legacy AirOS keys may call the wired interface "lan" or "eth".
-    if normalized.startswith(("ethernet_", "lan", "eth")) or normalized in {"ethernet_mac", "lip", "lmac", "mac", "ip_address"}:
-        return "ethernet"
+    if normalized.startswith(("ethernet_", "lan", "eth")) or normalized in {"ethernet_mac", "lip", "lmac", "mac"}:
+        return "lan"
     return "main"
 
 
@@ -204,9 +243,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # Ensure the LAN child exists, then move existing LAN entities
     # back under it. This preserves entity IDs and their history after upgrades.
     host = entry.data["host"]
-    ethernet_device = device_registry.async_get_or_create(
+    lan_device = device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        identifiers={(DOMAIN, f"{device_identifier(host)}_ethernet")},
+        identifiers={(DOMAIN, f"{device_identifier(host)}_lan")},
         name=f"{display_name} LAN",
         manufacturer="Ubiquiti",
         model="Original airOS 3.x–4.x LAN",
@@ -215,10 +254,27 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entity_registry = er.async_get(hass)
 
+    # Migrate the previous SSH-only child identifier to the shared LAN identifier
+    # used by the HTTP integration. This keeps existing entities and history.
+    legacy_lan_device = device_registry.async_get_device(
+        identifiers={(DOMAIN, f"{device_identifier(host)}_ethernet")}
+    )
+    if legacy_lan_device is not None and legacy_lan_device.id != lan_device.id:
+        for registered_entity in list(entity_registry.entities.values()):
+            if registered_entity.device_id == legacy_lan_device.id:
+                entity_registry.async_update_entity(
+                    registered_entity.entity_id, device_id=lan_device.id
+                )
+        if not any(
+            registered_entity.device_id == legacy_lan_device.id
+            for registered_entity in entity_registry.entities.values()
+        ):
+            device_registry.async_remove_device(legacy_lan_device.id)
+
     # Remove obsolete per-interface devices left by earlier integration builds.
     interface_prefix = f"{display_name} Interface "
     for old_device in list(device_registry.devices.values()):
-        if old_device.id in {ethernet_device.id, parent_device.id}:
+        if old_device.id in {lan_device.id, parent_device.id}:
             continue
         if entry.entry_id not in old_device.config_entries:
             continue
@@ -226,7 +282,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             continue
         for registered_entity in list(entity_registry.entities.values()):
             if registered_entity.device_id == old_device.id:
-                entity_registry.async_update_entity(registered_entity.entity_id, device_id=ethernet_device.id)
+                entity_registry.async_update_entity(registered_entity.entity_id, device_id=lan_device.id)
         if not any(e.device_id == old_device.id for e in entity_registry.entities.values()):
             device_registry.async_remove_device(old_device.id)
     entity_registry = er.async_get(hass)
@@ -301,9 +357,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if not entity.unique_id.startswith(prefix):
             continue
         key = entity.unique_id[len(prefix):]
-        if _device_kind(key) == "ethernet" and entity.device_id != ethernet_device.id:
+        if _device_kind(key) == "lan" and entity.device_id != lan_device.id:
             entity_registry.async_update_entity(
-                entity.entity_id, device_id=ethernet_device.id
+                entity.entity_id, device_id=lan_device.id
             )
 
     # The first probe may not identify the hardware. Update the main device
@@ -412,6 +468,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class AiRXS2Sensor(SensorEntity):
+    _attr_has_entity_name = True
+
     def __init__(
         self, coordinator, entry, key, unit, label=None, display_name=None,
         static_value=None, device_kind="main", unique_id_suffix=None,
@@ -424,13 +482,13 @@ class AiRXS2Sensor(SensorEntity):
         self._static_value = static_value
         self._device_kind = device_kind
         self._parent_device_id = parent_device_id
-        if device_kind == "ethernet":
+        if device_kind == "lan":
             self._device_name = f"{self._display_name} LAN"
         elif device_kind == "wireless":
             self._device_name = f"{self._display_name} Wireless"
         else:
             self._device_name = self._display_name
-        self._attr_name = "AirOS Hostname" if key in {"side_devicename", "devicename", "hostname"} else (label or key)
+        self._attr_name = label or _friendly_name(key)
         self._attr_unique_id = f"{entry.data['host']}_{key}" + (
             f"_{unique_id_suffix}" if unique_id_suffix else ""
         )
@@ -460,16 +518,18 @@ class AiRXS2Sensor(SensorEntity):
     def device_info(self):
         host = self._entry.data["host"]
         info = {
-            "identifiers": {(DOMAIN, host if self._device_kind == "main" else f"{host}_{self._device_kind}")},
+            "identifiers": {(DOMAIN, device_identifier(host) if self._device_kind == "main" else f"{device_identifier(host)}_{self._device_kind}")},
             "name": self._device_name,
             "manufacturer": "Ubiquiti",
-            "model": ((self.coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x") if self._device_kind == "main" else (
-                "Original airOS 3.x–4.x LAN" if self._device_kind == "ethernet" else
-                "Original airOS 3.x–4.x Wireless"
+            "model": (
+                (self.coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x"
+            ) if self._device_kind == "main" else (
+                ((self.coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x")
+                + (" LAN" if self._device_kind == "lan" else " Wireless")
             ),
         }
         if self._device_kind != "main":
-            info["via_device_id"] = self._parent_device_id
+            info["via_device"] = (DOMAIN, device_identifier(host))
         return DeviceInfo(**info)
 
     @property
