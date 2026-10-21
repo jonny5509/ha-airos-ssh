@@ -29,9 +29,9 @@ OPTIONAL_SENSORS = {
     "cpu_model": ("CPU Model", None),
     "cpu_usage": ("CPU Usage", "%"),
     "firmware_upgrade": ("Firmware Upgrade", None),
-    "apmac": ("AP MAC", None), "cfg_crc": ("Cfg CRC", None),
+    "apmac": ("AP MAC", None), "cfg_crc": ("Config CRC", None),
     "device_model": ("Device Model", None), "distance": ("Distance", None),
-    "ack_timeout": ("Ack Timeout", None), "latitude": ("Latitude", None),
+    "ack_timeout": ("ACK Timeout", None), "latitude": ("Latitude", None),
     "longitude": ("Longitude", None), "radio_date_time": ("Radio Date and Time", None),
     "ppp_ip": ("PPP IP Address", None), "ppp_rx_errors": ("PPP Receive Errors", None),
     "ppp_rx_bytes": ("PPP Received Data", "B"), "ppp_rx_packets": ("PPP Received Packets", None),
@@ -44,8 +44,8 @@ OPTIONAL_SENSORS = {
     "lan_rx_packets": ("LAN Received Packets", None),
     "lan_tx_errors": ("LAN Transmit Errors", None),
     "lan_tx_packets": ("LAN Transmitted Packets", None),
-    "wireless_rx_bytes": ("Wireless Bytes Received", "B"),
-    "wireless_tx_bytes": ("Wireless Bytes Sent", "B"),
+    "wireless_rx_bytes": ("Wireless Received Data", "B"),
+    "wireless_tx_bytes": ("Wireless Transmitted Data", "B"),
 }
 
 DEVICE_METADATA = {
@@ -490,6 +490,41 @@ class AiRXS2Sensor(SensorEntity):
             self._device_name = f"{self._display_name} Wireless"
         else:
             self._device_name = self._display_name
+        self._attr_icon = {
+            "signal": "mdi:signal",
+            "noise": "mdi:waveform",
+            "ccq": "mdi:chart-line",
+            "snr": "mdi:signal",
+            "wlanTxRate": "mdi:upload",
+            "wlanRxRate": "mdi:download",
+            "frequency": "mdi:sine-wave",
+            "essid": "mdi:wifi",
+            "wlanMac": "mdi:network-outline",
+            "mac": "mdi:lan",
+            "hostname": "mdi:form-textbox",
+            "ip_address": "mdi:ip-network",
+            "uptime_seconds": "mdi:timer-outline",
+            "cpu_usage": "mdi:cpu-64-bit",
+            "ram_usage_percent": "mdi:memory",
+            "firmware_upgrade": "mdi:chip",
+            "ethernet_rx_bytes": "mdi:download-network",
+            "ethernet_tx_bytes": "mdi:upload-network",
+            "wireless_rx_bytes": "mdi:download-network",
+            "wireless_tx_bytes": "mdi:upload-network",
+            "lan_rxbytes": "mdi:download-network",
+            "lan_txbytes": "mdi:upload-network",
+            "wlan_rxbytes": "mdi:download-network",
+            "wlan_txbytes": "mdi:upload-network",
+            "ppp_rxbytes": "mdi:download-network",
+            "ppp_txbytes": "mdi:upload-network",
+            "device_model": "mdi:router-wireless",
+            "deviceId": "mdi:identifier",
+            "firmwareVersion": "mdi:package-variant",
+            "distance": "mdi:map-marker-distance",
+            "latitude": "mdi:latitude",
+            "longitude": "mdi:longitude",
+            "radio_date_time": "mdi:clock-outline",
+        }.get(key)
         self._attr_name = label or _friendly_name(key)
         self._attr_unique_id = f"{entry.data['host']}_{key}" + (
             f"_{unique_id_suffix}" if unique_id_suffix else ""
