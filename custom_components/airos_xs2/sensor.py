@@ -1,7 +1,7 @@
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.entity import DeviceInfo
-from .const import DOMAIN
+from .const import DOMAIN, device_identifier
 import re
 
 BASE_SENSORS = {
@@ -195,7 +195,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     device_registry = dr.async_get(hass)
     parent_device = device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        identifiers={(DOMAIN, entry.data["host"])},
+        identifiers={(DOMAIN, device_identifier(entry.data["host"]))},
         name=display_name,
         manufacturer="Ubiquiti",
         model=(data.get("device_model") or "Original airOS 3.x–4.x"),
@@ -206,11 +206,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     host = entry.data["host"]
     ethernet_device = device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        identifiers={(DOMAIN, f"{host}_ethernet")},
+        identifiers={(DOMAIN, f"{device_identifier(host)}_ethernet")},
         name=f"{display_name} LAN",
         manufacturer="Ubiquiti",
         model="Original airOS 3.x–4.x LAN",
-        via_device=(DOMAIN, host),
+        via_device=(DOMAIN, device_identifier(host)),
     )
 
     entity_registry = er.async_get(hass)
@@ -300,7 +300,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         """Keep the model label consistent with the HTTP integration."""
         detected_model = (coordinator.data or {}).get("device_model")
         current_device = device_registry.async_get_device(
-            identifiers={(DOMAIN, entry.data["host"])}
+            identifiers={(DOMAIN, device_identifier(entry.data["host"]))}
         )
         if current_device and detected_model and current_device.model != detected_model:
             device_registry.async_update_device(current_device.id, model=detected_model)
