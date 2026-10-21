@@ -183,7 +183,7 @@ def _device_kind(key):
         return "main"
     # Legacy AirOS keys may call the wired interface "lan" or "eth".
     if normalized.startswith(("ethernet_", "lan", "eth")) or normalized in {"ethernet_mac", "lip", "lmac", "mac", "ip_address"}:
-        return "ethernet"
+        return "lan"
     return "main"
 
 
@@ -226,7 +226,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             continue
         for registered_entity in list(entity_registry.entities.values()):
             if registered_entity.device_id == old_device.id:
-                entity_registry.async_update_entity(registered_entity.entity_id, device_id=ethernet_device.id)
+                entity_registry.async_update_entity(registered_entity.entity_id, device_id=lan_device.id)
         if not any(e.device_id == old_device.id for e in entity_registry.entities.values()):
             device_registry.async_remove_device(old_device.id)
     entity_registry = er.async_get(hass)
@@ -301,7 +301,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if not entity.unique_id.startswith(prefix):
             continue
         key = entity.unique_id[len(prefix):]
-        if _device_kind(key) == "ethernet" and entity.device_id != ethernet_device.id:
+        if _device_kind(key) == "lan" and entity.device_id != lan_device.id:
             entity_registry.async_update_entity(
                 entity.entity_id, device_id=ethernet_device.id
             )
@@ -424,7 +424,7 @@ class AiRXS2Sensor(SensorEntity):
         self._static_value = static_value
         self._device_kind = device_kind
         self._parent_device_id = parent_device_id
-        if device_kind == "ethernet":
+        if device_kind == "lan"
             self._device_name = f"{self._display_name} LAN"
         elif device_kind == "wireless":
             self._device_name = f"{self._display_name} Wireless"
@@ -460,16 +460,16 @@ class AiRXS2Sensor(SensorEntity):
     def device_info(self):
         host = self._entry.data["host"]
         info = {
-            "identifiers": {(DOMAIN, host if self._device_kind == "main" else f"{host}_{self._device_kind}")},
+            "identifiers": {(DOMAIN, device_identifier(host) if self._device_kind == "main" else f"{device_identifier(host)}_{self._device_kind}")},
             "name": self._device_name,
             "manufacturer": "Ubiquiti",
             "model": ((self.coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x") if self._device_kind == "main" else (
-                "Original airOS 3.x–4.x LAN" if self._device_kind == "ethernet" else
+                "Original airOS 3.x–4.x LAN" if self._device_kind == "lan" else
                 "Original airOS 3.x–4.x Wireless"
             ),
         }
         if self._device_kind != "main":
-            info["via_device_id"] = self._parent_device_id
+            info["via_device"] = (DOMAIN, device_identifier(host))
         return DeviceInfo(**info)
 
     @property
