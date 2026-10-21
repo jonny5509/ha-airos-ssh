@@ -182,7 +182,7 @@ def _device_kind(key):
     if key == "uptime_seconds":
         return "main"
     # Legacy AirOS keys may call the wired interface "lan" or "eth".
-    if normalized.startswith(("ethernet_", "lan", "eth")) or normalized in {"ethernet_mac", "lip", "lmac", "mac", "ip_address"}:
+    if normalized.startswith(("ethernet_", "lan", "eth")) or normalized in {"ethernet_mac", "lip", "lmac", "mac"}:
         return "lan"
     return "main"
 
