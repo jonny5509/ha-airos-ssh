@@ -207,7 +207,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
 
     @staticmethod
     def _identify_device(data, extra_output=""):
-        """Identify only original NanoStation 2/5 hardware from legacy airOS metadata."""
+        """Identify original airOS 3.x-4.x hardware from legacy metadata."""
         identity_keys = {
             "platform", "deviceid", "board", "boardname", "board_name",
             "product", "productname", "model", "devicemodel", "hardware",
@@ -219,16 +219,37 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         identity = " ".join(parts)
         compact = re.sub(r"[^a-z0-9]", "", identity.lower())
 
-        # XS2/NS2 and XS5/NS5 are the original NanoStation families. Do not
-        # classify Loco, Bullet, PicoStation, or PowerStation products here.
-        if re.search(r"(?:nanostation\s*2|\bns2\b|\bxs2\b)", identity, re.IGNORECASE) or any(
-            alias in compact for alias in ("nanostation2", "ns2", "xs2")
-        ):
-            data["device_model"] = "NanoStation2"
-        elif re.search(r"(?:nanostation\s*5|\bns5\b|\bxs5\b)", identity, re.IGNORECASE) or any(
-            alias in compact for alias in ("nanostation5", "ns5", "xs5")
-        ):
-            data["device_model"] = "NanoStation5"
+        # Prefer explicit product identifiers. XS2/XS5 firmware prefixes are
+        # only a fallback because several original airOS products share them.
+        model_aliases = (
+            ("nanostationloco2", "NanoStation Loco2"),
+            ("nanostationloco5", "NanoStation Loco5"),
+            ("loco2", "NanoStation Loco2"),
+            ("loco5", "NanoStation Loco5"),
+            ("picostation2", "PicoStation 2"),
+            ("picostation5", "PicoStation 5"),
+            ("powerstation2", "PowerStation 2"),
+            ("powerstation5", "PowerStation 5"),
+            ("bullet2", "Bullet2"),
+            ("bullet5", "Bullet5"),
+            ("nanostation2", "NanoStation 2"),
+            ("nanostation5", "NanoStation 5"),
+            ("ns2", "NanoStation 2"),
+            ("ns5", "NanoStation 5"),
+        )
+        for alias, label in model_aliases:
+            if alias in compact:
+                data["device_model"] = label
+                return
+
+        firmware = str(data.get("firmwareVersion") or "")
+        if not firmware:
+            firmware_match = re.search(r"(?i)\b(XS[25])\b", identity)
+            firmware = firmware_match.group(1) if firmware_match else ""
+        if firmware.upper().startswith("XS2") or re.search(r"(?i)\b(?:NS2|XS2)\b", identity):
+            data["device_model"] = "NanoStation 2"
+        elif firmware.upper().startswith("XS5") or re.search(r"(?i)\b(?:NS5|XS5)\b", identity):
+            data["device_model"] = "NanoStation 5"
         else:
             for key in ("platform", "deviceId", "board", "board_name", "product", "model", "cpu_model"):
                 value = data.get(key)
