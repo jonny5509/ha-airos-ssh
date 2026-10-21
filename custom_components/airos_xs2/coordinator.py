@@ -255,12 +255,9 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
             data["device_model"] = "NanoStation2"
         elif firmware.upper().startswith("XS5") or re.search(r"(?i)\b(?:NS5|XS5)\b", identity):
             data["device_model"] = "NanoStation5"
-        else:
-            for key in ("platform", "deviceId", "board", "board_name", "product", "model", "cpu_model"):
-                value = data.get(key)
-                if value and str(value).strip():
-                    data["device_model"] = str(value).strip()
-                    break
+        # Match the HTTP integration: do not expose a raw platform or board
+        # identifier as the device model. If the model is not recognized, the
+        # sensor platform uses the shared generic airOS fallback.
 
     @staticmethod
     def _update_firmware_upgrade_status(data):
