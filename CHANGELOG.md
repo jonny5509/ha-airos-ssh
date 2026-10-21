@@ -2,7 +2,7 @@
 
 This changelog records verified changes from the available repository history. It is not a complete reconstruction of every historical release.
 
-## Unreleased
+## 2.3.0
 
 - Standardize NanoStation model labels with the HTTP integration and align the fallback label for unknown models.
 - Clean up sensor entity names and icons, and deduplicate legacy sensor aliases.
