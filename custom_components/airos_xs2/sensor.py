@@ -91,7 +91,7 @@ SENSOR_NAME_OVERRIDES = {
     "ethernet_interface_state": "LAN State",
     "wireless_interface_state": "Wireless Interface State",
     "mac": "Device MAC Address",
-    "essid": "Wireless Network Name (SSID)",
+    "essid": "Wireless Network Name",
     "frequency": "Wireless Frequency",
     "mode": "Wireless Mode",
     "hostname": "Hostname",
@@ -109,8 +109,8 @@ SENSOR_NAME_OVERRIDES = {
     "lan_rx_packets": "LAN Received Packets",
     "lan_tx_errors": "LAN Transmit Errors",
     "lan_tx_packets": "LAN Transmitted Packets",
-    "wireless_rx_bytes": "Wireless Bytes Received",
-    "wireless_tx_bytes": "Wireless Bytes Sent",
+    "wireless_rx_bytes": "Wireless Received Data",
+    "wireless_tx_bytes": "Wireless Transmitted Data",
     "deviceId": "Device ID",
     "firmwareVersion": "Firmware Version",
     "platform": "Platform",
@@ -429,6 +429,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class AiRXS2Sensor(SensorEntity):
+    _attr_has_entity_name = True
+
     def __init__(
         self, coordinator, entry, key, unit, label=None, display_name=None,
         static_value=None, device_kind="main", unique_id_suffix=None,
@@ -441,13 +443,13 @@ class AiRXS2Sensor(SensorEntity):
         self._static_value = static_value
         self._device_kind = device_kind
         self._parent_device_id = parent_device_id
-        if device_kind == "lan"
+        if device_kind == "lan":
             self._device_name = f"{self._display_name} LAN"
         elif device_kind == "wireless":
             self._device_name = f"{self._display_name} Wireless"
         else:
             self._device_name = self._display_name
-        self._attr_name = "AirOS Hostname" if key in {"side_devicename", "devicename", "hostname"} else (label or key)
+        self._attr_name = label or _friendly_name(key)
         self._attr_unique_id = f"{entry.data['host']}_{key}" + (
             f"_{unique_id_suffix}" if unique_id_suffix else ""
         )
