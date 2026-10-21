@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Align device identifiers and device metadata with the HTTP integration so the same radio is represented consistently across transports.
+- Standardize the reboot control as a **Reboot** button, matching the HTTP integration.
+- Correct the canonical MAC sensor label to **Device MAC Address** and clean up legacy duplicate/obsolete entity entries.
+
 This changelog records verified changes from the available repository history. It is not a complete reconstruction of every historical release.
 
 ## 2.1.8
