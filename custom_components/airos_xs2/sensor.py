@@ -204,9 +204,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # Ensure the LAN child exists, then move existing LAN entities
     # back under it. This preserves entity IDs and their history after upgrades.
     host = entry.data["host"]
-    ethernet_device = device_registry.async_get_or_create(
+    lan_device = device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        identifiers={(DOMAIN, f"{device_identifier(host)}_ethernet")},
+        identifiers={(DOMAIN, f"{device_identifier(host)}_lan")},
         name=f"{display_name} LAN",
         manufacturer="Ubiquiti",
         model="Original airOS 3.x–4.x LAN",
@@ -215,10 +215,27 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entity_registry = er.async_get(hass)
 
+    # Migrate the previous SSH-only child identifier to the shared LAN identifier
+    # used by the HTTP integration. This keeps existing entities and history.
+    legacy_lan_device = device_registry.async_get_device(
+        identifiers={(DOMAIN, f"{device_identifier(host)}_ethernet")}
+    )
+    if legacy_lan_device is not None and legacy_lan_device.id != lan_device.id:
+        for registered_entity in list(entity_registry.entities.values()):
+            if registered_entity.device_id == legacy_lan_device.id:
+                entity_registry.async_update_entity(
+                    registered_entity.entity_id, device_id=lan_device.id
+                )
+        if not any(
+            registered_entity.device_id == legacy_lan_device.id
+            for registered_entity in entity_registry.entities.values()
+        ):
+            device_registry.async_remove_device(legacy_lan_device.id)
+
     # Remove obsolete per-interface devices left by earlier integration builds.
     interface_prefix = f"{display_name} Interface "
     for old_device in list(device_registry.devices.values()):
-        if old_device.id in {ethernet_device.id, parent_device.id}:
+        if old_device.id in {lan_device.id, parent_device.id}:
             continue
         if entry.entry_id not in old_device.config_entries:
             continue
@@ -303,7 +320,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         key = entity.unique_id[len(prefix):]
         if _device_kind(key) == "lan" and entity.device_id != lan_device.id:
             entity_registry.async_update_entity(
-                entity.entity_id, device_id=ethernet_device.id
+                entity.entity_id, device_id=lan_device.id
             )
 
     # The first probe may not identify the hardware. Update the main device
