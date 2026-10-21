@@ -148,6 +148,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         # Canonicalise firmware-specific spellings into stable main-device sensors.
         lookup = {re.sub(r"[^a-z0-9]", "", str(k).lower()): v for k, v in data.items()}
         aliases = {
+            "firmwareVersion": ("firmwareVersion", "firmware_version", "fwversion", "firmware", "version"),
             "apmac": ("apmac","ap_mac","apmacaddr","wlan_apmac"),
             "cfg_crc": ("cfgcrc","cfg_crc","configcrc","config_crc"),
             "distance": ("distance","linkdistance","dist"),
@@ -162,6 +163,18 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                 if value not in (None, ""):
                     data.setdefault(target, value)
                     break
+
+        # Keep installed firmware under one canonical key. Prefer explicit
+        # firmware fields, but accept legacy status.cgi/mca-status spellings.
+        if data.get("firmwareVersion") not in (None, ""):
+            for alias in ("firmware_version", "fwversion", "firmware", "version"):
+                alias_key = next(
+                    (key for key in data if re.sub(r"[^a-z0-9]", "", str(key).lower())
+                     == re.sub(r"[^a-z0-9]", "", alias)),
+                    None,
+                )
+                if alias_key is not None and alias_key != "firmwareVersion":
+                    data.pop(alias_key, None)
         self._identify_device(data, output)
 
         # Expose only one canonical uptime sensor, populated by the procfs probe.
