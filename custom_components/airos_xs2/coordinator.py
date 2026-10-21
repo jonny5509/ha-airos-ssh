@@ -156,6 +156,8 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
             "latitude": ("latitude","lat"), "longitude": ("longitude","lon","lng"),
             "radio_date_time": ("datetime","radio_datetime","date_time","radio_date_time"),
             "ppp_ip": ("pppip","ppp_ip","pppaddress"),
+            "lan_ip_address": ("lan_ip_address", "lip", "lan_ip", "ethernet_ip_address"),
+            "lan_mac_address": ("lan_mac_address", "lmac", "ethernet_mac_address"),
         }
         for target, candidates in aliases.items():
             for candidate in candidates:
