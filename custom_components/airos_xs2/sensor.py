@@ -17,7 +17,8 @@ OPTIONAL_SENSORS = {
     "essid": ("Wireless Network Name (SSID)", None),
     "frequency": ("Wireless Frequency", "MHz"),
     "wlanMac": ("Wireless MAC Address", None),
-    "ethernet_mac": ("LAN MAC Address", None),
+    "lan_ip_address": ("LAN IP Address", None),
+    "lan_mac_address": ("LAN MAC Address", None),
     "ethernet_interface_state": ("LAN State", None),
     "wireless_interface_state": ("Wireless Interface State", None),
     "wireless_mac": ("Wireless MAC Address", None),
@@ -87,6 +88,8 @@ SENSOR_NAME_OVERRIDES = {
     "wlanRxRate": "Wireless Receive Rate",
     "wlanMac": "Wireless MAC Address",
     "wireless_mac": "Wireless MAC Address",
+    "lan_ip_address": "LAN IP Address",
+    "lan_mac_address": "LAN MAC Address",
     "ethernet_mac": "LAN MAC Address",
     "ethernet_interface_state": "LAN State",
     "wireless_interface_state": "Wireless Interface State",
@@ -394,7 +397,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             continue
         # IP discovery depends on an optional SSH probe. Register the entity
         # even if the first probe fails, so it can become available on later polls.
-        if key in {"ip_address", "uptime_seconds", "ethernet_interface_state", "wireless_interface_state", "cpu_usage", "firmware_upgrade", "ram_usage_percent", "lan_rx_errors", "lan_rx_packets", "lan_tx_errors", "lan_tx_packets"} or data.get(key) not in (None, ""):
+        if key in {"ip_address", "uptime_seconds", "ethernet_interface_state", "wireless_interface_state", "cpu_usage", "firmware_upgrade", "ram_usage_percent", "lan_rx_errors", "lan_rx_packets", "lan_tx_errors", "lan_tx_packets", "lan_ip_address", "lan_mac_address"} or data.get(key) not in (None, ""):
             sensors.append(
                 AiRXS2Sensor(
                     coordinator, entry, key, unit, label,
@@ -404,8 +407,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
             )
             added_keys.add(key)
 
-    # Fold the raw LAN MAC alias into Device MAC Address to avoid a duplicate entity.
-    added_keys.add("ethernet_mac")
+    # Keep canonical LAN IP/MAC sensors, suppressing their raw interface aliases.
+    added_keys.update({"ethernet_mac", "ethernet_ip_address", "lip", "lmac"})
     # Firmware detail fields are attributes of the single Firmware Upgrade sensor,
     # not separate entities of their own.
     added_keys.update(key for key in data if key.startswith("firmware_upgrade_"))
@@ -447,8 +450,16 @@ async def async_setup_entry(hass, entry, async_add_entities):
         "ppp_txpackets": "ppp_tx_packets", "ppp_txerrors": "ppp_tx_errors",
         "wlanrxbytes": "wireless_rx_bytes", "wlantxbytes": "wireless_tx_bytes",
         "wireless_mac": "wlanMac", "ethernet_mac": "mac",
+        "lip": "lan_ip_address", "ethernet_ip_address": "lan_ip_address",
+        "lmac": "lan_mac_address", "ethernet_mac_address": "lan_mac_address",
     }
+    lan_sensor_keys = {"lan_ip_address", "lan_mac_address", "ethernet_interface_state", "ethernet_rx_bytes", "ethernet_tx_bytes", "lan_rx_errors", "lan_rx_packets", "lan_tx_errors", "lan_tx_packets"}
     for key, value in data.items():
+        # The LAN device should contain only the nine requested canonical sensors.
+        # Suppress interface aliases and any additional raw LAN-only fields.
+        if _device_kind(key) == "lan" and key not in lan_sensor_keys:
+            added_keys.add(key)
+            continue
         canonical_key = duplicate_ethernet_aliases.get(key.strip().lower())
         if canonical_key and data.get(canonical_key) is not None:
             added_keys.add(key)
