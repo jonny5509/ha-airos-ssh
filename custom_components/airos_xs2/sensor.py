@@ -250,6 +250,18 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 entity.entity_id, new_entity_id=hostname_entity_id
             )
 
+    # Correct the registered display name for the canonical device MAC.
+    # Older builds may have retained an incorrect "AP MAC" label in the
+    # entity registry even though the current sensor description is correct.
+    device_mac_unique_id = f"{entry.data['host']}_mac"
+    for entity in list(entity_registry.entities.values()):
+        if entity.config_entry_id != entry.entry_id:
+            continue
+        if entity.unique_id == device_mac_unique_id and entity.name != "Device MAC Address":
+            entity_registry.async_update_entity(
+                entity.entity_id, name="Device MAC Address"
+            )
+
     # Remove obsolete LAN-specific IP/MAC entities belonging to this
     # config entry. Keep the canonical Device IP Address and Device MAC
     # Address sensors, which replace these legacy aliases.
