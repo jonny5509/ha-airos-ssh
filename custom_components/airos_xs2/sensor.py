@@ -215,6 +215,8 @@ def _device_kind(key):
     # Check WLAN first because "lan" is also present inside "wlan".
     if normalized.startswith(("wlan", "wireless_")) or key in BASE_SENSORS or key in {
         "essid", "frequency", "wireless_mac", "wireless_interface_state", "mode",
+        "wmac", "wip", "channel", "security", "qos", "antenna", "ack", "rstatus",
+        "err_nwids", "err_crypts", "err_frags", "err_retries", "err_beacons", "err_misc",
     }:
         return "wireless"
     # Keep the single canonical uptime sensor on the main device.
