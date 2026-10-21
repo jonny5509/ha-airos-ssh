@@ -47,8 +47,8 @@ def test_identify_device_recognizes_nano_station_models():
     AiRXS2Coordinator._identify_device(ns2)
     AiRXS2Coordinator._identify_device(ns5)
 
-    assert ns2["device_model"] == "NanoStation2"
-    assert ns5["device_model"] == "NanoStation5"
+    assert ns2["device_model"] == "NanoStation 2"
+    assert ns5["device_model"] == "NanoStation 5"
 
 
 def test_identify_device_does_not_classify_other_families_as_nano_station():
@@ -58,8 +58,8 @@ def test_identify_device_does_not_classify_other_families_as_nano_station():
     AiRXS2Coordinator._identify_device(loco)
     AiRXS2Coordinator._identify_device(powerstation)
 
-    assert loco["device_model"] != "NanoStation5"
-    assert powerstation["device_model"] != "NanoStation2"
+    assert loco["device_model"] != "NanoStation 5"
+    assert powerstation["device_model"] != "NanoStation 2"
 
 
 def test_version_probe_recognises_legacy_air_os_3_and_4_build_strings():
@@ -70,16 +70,16 @@ def test_version_probe_recognises_legacy_air_os_3_and_4_build_strings():
     coordinator._parse_probe("version", "XS2.ar2316.v3.7.1.4856.090213.2225", ns2)
     coordinator._parse_probe("version", "XS5.ar2313.v4.0.4.5074.150724.1344", ns5)
 
-    assert ns2["device_model"] == "NanoStation2"
-    assert ns5["device_model"] == "NanoStation5"
+    assert ns2["device_model"] == "NanoStation 2"
+    assert ns5["device_model"] == "NanoStation 5"
     assert ns2["firmwareVersion"].startswith("XS2.ar2316.v3.7.1")
     assert ns5["firmwareVersion"].startswith("XS5.ar2313.v4.0.4")
 
 
 def test_firmware_status_compares_supported_nano_station_5_versions():
-    older = {"device_model": "NanoStation5", "firmwareVersion": "v4.0.3"}
-    current = {"device_model": "NanoStation5", "firmwareVersion": "v4.0.4.5074"}
-    unsupported = {"device_model": "NanoStation2", "firmwareVersion": "v4.0.4"}
+    older = {"device_model": "NanoStation 5", "firmwareVersion": "v4.0.3"}
+    current = {"device_model": "NanoStation 5", "firmwareVersion": "v4.0.4.5074"}
+    unsupported = {"device_model": "NanoStation 2", "firmwareVersion": "v4.0.4"}
 
     AiRXS2Coordinator._update_firmware_upgrade_status(older)
     AiRXS2Coordinator._update_firmware_upgrade_status(current)
