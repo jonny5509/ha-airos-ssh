@@ -1,9 +1,11 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+
 from .const import DOMAIN
 from .coordinator import AiRXS2Coordinator
 
-PLATFORMS = ["sensor", "switch"]
+PLATFORMS = ["sensor", "button"]
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
