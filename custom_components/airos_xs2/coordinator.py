@@ -214,7 +214,8 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         }
         parts = [extra_output]
         for key, value in data.items():
-            if (key.lower() in identity_keys or key.lower() in {"firmwareversion", "cpu_model"}\n                    or key.lower().endswith(("_platform", "_deviceid", "_board", "_boardname", "_product", "_productname", "_model", "_devicemodel", "_hardware", "_firmwareversion"))):
+            if (key.lower() in identity_keys or key.lower() in {"firmwareversion", "cpu_model"}
+                    or key.lower().endswith(("_platform", "_deviceid", "_board", "_boardname", "_product", "_productname", "_model", "_devicemodel", "_hardware", "_firmwareversion"))):
                 parts.append(str(value))
         identity = " ".join(parts)
         compact = re.sub(r"[^a-z0-9]", "", identity.lower())
