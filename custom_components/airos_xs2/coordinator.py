@@ -411,6 +411,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                     data.setdefault(f"{prefix}_mac", mac.group(1))
                     if is_ethernet:
                         data.setdefault("mac", mac.group(1))
+                        data.setdefault("lan_mac_address", mac.group(1))
                     if is_wireless:
                         data.setdefault("wlanMac", mac.group(1))
                 ip = re.search(r"inet addr:([0-9.]+)", block)
@@ -418,6 +419,8 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
                     ip = re.search(r"\binet ([0-9.]+)", block)
                 if ip:
                     data.setdefault("ip_address", ip.group(1))
+                    if is_ethernet:
+                        data.setdefault("lan_ip_address", ip.group(1))
                     if is_ppp:
                         data.setdefault("ppp_ip", ip.group(1))
 
