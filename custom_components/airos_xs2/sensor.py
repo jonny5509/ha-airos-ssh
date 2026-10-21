@@ -198,7 +198,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         identifiers={(DOMAIN, entry.data["host"])},
         name=display_name,
         manufacturer="Ubiquiti",
-        model="Original airOS 3.x–4.x",
+        model=(data.get("device_model") or "Original airOS 3.x–4.x"),
     )
 
     # Ensure the LAN child exists, then move existing LAN entities
@@ -298,14 +298,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # registry entry on later coordinator refreshes once a specific model appears.
     def _update_registered_device_model():
         """Keep the model label consistent with the HTTP integration."""
-        canonical_model = "Original NanoStation 2/5 / airOS 3.x–4.x"
+        detected_model = (coordinator.data or {}).get("device_model")
         current_device = device_registry.async_get_device(
             identifiers={(DOMAIN, entry.data["host"])}
         )
-        if current_device and current_device.model != canonical_model:
-            device_registry.async_update_device(
-                current_device.id, model=canonical_model
-            )
+        if current_device and detected_model and current_device.model != detected_model:
+            device_registry.async_update_device(current_device.id, model=detected_model)
 
     entry.async_on_unload(coordinator.async_add_listener(_update_registered_device_model))
 
@@ -453,10 +451,10 @@ class AiRXS2Sensor(SensorEntity):
             "identifiers": {(DOMAIN, host if self._device_kind == "main" else f"{host}_{self._device_kind}")},
             "name": self._device_name,
             "manufacturer": "Ubiquiti",
-            "model": "Original NanoStation 2/5 / airOS 3.x–4.x" if self._device_kind == "main" else (
-                "Original NanoStation 2/5 / airOS 3.x–4.x LAN" if self._device_kind == "ethernet" else
-                "Original NanoStation 2/5 / airOS 3.x–4.x Wireless"
-            ),
+            "model": (data_model := (self.coordinator.data or {}).get("device_model")) if self._device_kind == "main" and data_model else ("Original airOS 3.x–4.x" if self._device_kind == "main" else (
+                "Original airOS 3.x–4.x LAN" if self._device_kind == "ethernet" else
+                "Original airOS 3.x–4.x Wireless"
+            )),
         }
         if self._device_kind != "main":
             info["via_device_id"] = self._parent_device_id
