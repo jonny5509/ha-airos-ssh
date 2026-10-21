@@ -1,7 +1,7 @@
 import asyncssh
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity import DeviceInfo
-from .const import DOMAIN
+from .const import DOMAIN, device_identifier
 
 
 def _display_name(raw_name):
@@ -27,7 +27,7 @@ class AiRXS2RebootSwitch(SwitchEntity):
     @property
     def device_info(self):
         return DeviceInfo(
-            identifiers={(DOMAIN, self._entry.data["host"])},
+            identifiers={(DOMAIN, device_identifier(self._entry.data["host"]))},
             name=self._name,
             manufacturer="Ubiquiti",
             model="Ubiquiti AirOS",
