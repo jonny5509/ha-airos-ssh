@@ -2,6 +2,13 @@
 
 This changelog records verified changes from the available repository history. It is not a complete reconstruction of every historical release.
 
+## Unreleased
+
+- Standardize NanoStation model labels with the HTTP integration and align the fallback label for unknown models.
+- Clean up sensor entity names and icons, and deduplicate legacy sensor aliases.
+- Add canonical LAN IP Address and LAN MAC Address sensors while mapping legacy field aliases to those entities.
+- Restrict the LAN child device to the nine canonical LAN sensors: IP address, MAC address, receive errors/data/packets, state, and transmit errors/data/packets.
+
 ## 2.1.8
 
 - Align the setup form's field labels, default device name, and host example with the HTTP integration.
