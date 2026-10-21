@@ -237,10 +237,10 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
             ("pico5", "PicoStation 5"),
             ("bullet2", "Bullet2"),
             ("bullet5", "Bullet5"),
-            ("nanostation2", "NanoStation 2"),
-            ("nanostation5", "NanoStation 5"),
-            ("ns2", "NanoStation 2"),
-            ("ns5", "NanoStation 5"),
+            ("nanostation2", "NanoStation2"),
+            ("nanostation5", "NanoStation5"),
+            ("ns2", "NanoStation2"),
+            ("ns5", "NanoStation5"),
         )
         for alias, label in model_aliases:
             if alias in compact:
@@ -252,9 +252,9 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
             firmware_match = re.search(r"(?i)\b(XS[25])\b", identity)
             firmware = firmware_match.group(1) if firmware_match else ""
         if firmware.upper().startswith("XS2") or re.search(r"(?i)\b(?:NS2|XS2)\b", identity):
-            data["device_model"] = "NanoStation 2"
+            data["device_model"] = "NanoStation2"
         elif firmware.upper().startswith("XS5") or re.search(r"(?i)\b(?:NS5|XS5)\b", identity):
-            data["device_model"] = "NanoStation 5"
+            data["device_model"] = "NanoStation5"
         else:
             for key in ("platform", "deviceId", "board", "board_name", "product", "model", "cpu_model"):
                 value = data.get(key)
