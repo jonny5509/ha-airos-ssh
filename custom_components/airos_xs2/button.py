@@ -27,6 +27,7 @@ class AirOSRebootButton(ButtonEntity):
     _attr_icon = "mdi:restart"
 
     def __init__(self, coordinator, entry):
+        super().__init__()
         self._coordinator = coordinator
         self._attr_unique_id = f"{device_identifier(entry.data['host'])}_reboot"
         self._attr_device_info = DeviceInfo(
@@ -35,6 +36,7 @@ class AirOSRebootButton(ButtonEntity):
             model=(coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x",
             name=entry.data["name"].split(",", 1)[0].strip() or "AirOS Device",
         )
+
     async def async_press(self):
         """Request a normal reboot over SSH."""
         async with asyncssh.connect(
