@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.1
+
+- Replace deprecated Home Assistant device-registry APIs with config-entry-scoped lookups and `via_device_id`.
+- Preserve legacy LAN child-device migration using the supported child-device lookup API.
+- Iterate device entries through the supported collection interface and use `config_entry_id`.
+- Simplify reboot button setup and remove the non-URL device configuration address.
+- Update integration and documentation version metadata to 2.3.1.
+
 This changelog records verified changes from the available repository history. It is not a complete reconstruction of every historical release.
 
 ## 2.3.0

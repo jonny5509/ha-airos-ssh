@@ -254,15 +254,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
         name=f"{display_name} LAN",
         manufacturer="Ubiquiti",
         model="Original airOS 3.x–4.x LAN",
-        via_device=(DOMAIN, device_identifier(host)),
+        via_device_id=parent_device.id,
     )
 
     entity_registry = er.async_get(hass)
 
     # Migrate the previous SSH-only child identifier to the shared LAN identifier
     # used by the HTTP integration. This keeps existing entities and history.
-    legacy_lan_device = device_registry.async_get_device(
-        identifiers={(DOMAIN, f"{device_identifier(host)}_ethernet")}
+    legacy_lan_device = device_registry.async_get_child_device_by_identifier(
+        (DOMAIN, f"{device_identifier(host)}_ethernet"), entry.entry_id
     )
     if legacy_lan_device is not None and legacy_lan_device.id != lan_device.id:
         for registered_entity in list(entity_registry.entities.values()):
@@ -278,10 +278,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     # Remove obsolete per-interface devices left by earlier integration builds.
     interface_prefix = f"{display_name} Interface "
-    for old_device in list(device_registry.devices.values()):
+    for old_device in device_registry.devices:
         if old_device.id in {lan_device.id, parent_device.id}:
             continue
-        if entry.entry_id not in old_device.config_entries:
+        if entry.entry_id != old_device.config_entry_id:
             continue
         if not (old_device.name or "").startswith(interface_prefix):
             continue
@@ -372,8 +372,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     def _update_registered_device_model():
         """Keep the model label consistent with the HTTP integration."""
         detected_model = (coordinator.data or {}).get("device_model")
-        current_device = device_registry.async_get_device(
-            identifiers={(DOMAIN, device_identifier(entry.data["host"]))}
+        current_device = device_registry.async_get_device_by_identifier(
+            (DOMAIN, device_identifier(entry.data["host"])), entry.entry_id
         )
         if current_device and detected_model and current_device.model != detected_model:
             device_registry.async_update_device(current_device.id, model=detected_model)
@@ -593,7 +593,7 @@ class AiRXS2Sensor(SensorEntity):
             ),
         }
         if self._device_kind != "main":
-            info["via_device"] = (DOMAIN, device_identifier(host))
+            info["via_device_id"] = self._parent_device_id
         return DeviceInfo(**info)
 
     @property

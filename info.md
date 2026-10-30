@@ -3,8 +3,8 @@
 Home Assistant custom integration for monitoring legacy Ubiquiti airOS 4.x radios over SSH, including NanoStation2, NanoStation5, PowerStation2, and related older hardware.
 
 - **Domain:** `airos_xs2`
-- **Current integration version:** `2.1.7`
-- **Communication:** Local SSH polling using AsyncSSH; includes a reboot switch
+- **Current integration version:** `2.3.1`
+- **Communication:** Local SSH polling using AsyncSSH; includes a reboot button
 - **Documentation:** https://github.com/jonny5509/ha-airos-ssh
 - **Issues:** https://github.com/jonny5509/ha-airos-ssh/issues
 - **Related HTTP integration:** https://github.com/jonny5509/ha-airos-http

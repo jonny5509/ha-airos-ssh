@@ -3,7 +3,6 @@ import asyncssh
 from homeassistant.components.button import ButtonEntity
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, device_identifier
 
@@ -20,7 +19,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities([AirOSRebootButton(coordinator, entry)])
 
 
-class AirOSRebootButton(CoordinatorEntity, ButtonEntity):
+class AirOSRebootButton(ButtonEntity):
     """Reboot the airOS device without factory-resetting it."""
 
     _attr_has_entity_name = True
@@ -28,16 +27,15 @@ class AirOSRebootButton(CoordinatorEntity, ButtonEntity):
     _attr_icon = "mdi:restart"
 
     def __init__(self, coordinator, entry):
-        super().__init__(coordinator)
+        super().__init__()
+        self._coordinator = coordinator
         self._attr_unique_id = f"{device_identifier(entry.data['host'])}_reboot"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, device_identifier(entry.data["host"]))},
             manufacturer="Ubiquiti",
             model=(coordinator.data or {}).get("device_model") or "Original airOS 3.x–4.x",
             name=entry.data["name"].split(",", 1)[0].strip() or "AirOS Device",
-            configuration_url=coordinator.host.rstrip("/"),
         )
-        self._coordinator = coordinator
 
     async def async_press(self):
         """Request a normal reboot over SSH."""
