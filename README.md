@@ -2,11 +2,11 @@
 
 [![Downloads](https://img.shields.io/github/downloads/jonny5509/ha-airos-ssh/total?label=downloads)](https://github.com/jonny5509/ha-airos-ssh/releases)
 
-**Version:** 2.2.3  
+**Version:** 2.3.1  
 **Transport:** SSH  
 **Repository:** https://github.com/jonny5509/ha-airos-ssh
 
-A Home Assistant custom integration for monitoring the original Ubiquiti NanoStation 2 (NS2/XS2) and NanoStation 5 (NS5/XS5) running legacy airOS 3.x–4.x. This edition connects over SSH and runs read-only status commands, with a switch to reboot the radio.
+A Home Assistant custom integration for monitoring the original Ubiquiti NanoStation 2 (NS2/XS2) and NanoStation 5 (NS5/XS5) running legacy airOS 3.x–4.x. This edition connects over SSH and runs read-only status commands, with a button to reboot the radio.
 
 ## Features
 
@@ -15,7 +15,7 @@ A Home Assistant custom integration for monitoring the original Ubiquiti NanoSta
 - Device hostname, IP/MAC addresses, uptime, and firmware information
 - Best-effort CPU, memory, load, and system diagnostics where supported
 - LAN, wireless, and PPP interface counters when available
-- Reboot switch
+- Reboot button
 
 Sensor availability depends on the radio model, firmware, and commands or counters exposed by the device. Optional diagnostic probes are best-effort.
 
