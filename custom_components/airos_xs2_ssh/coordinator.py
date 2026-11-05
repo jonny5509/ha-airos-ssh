@@ -5,7 +5,7 @@ import re
 from datetime import timedelta
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.core import HomeAssistant
-from .const import DEFAULT_SCAN_INTERVAL
+from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class AiRXS2Coordinator(DataUpdateCoordinator):
         super().__init__(
             hass,
             logger=_LOGGER,
-            name=f"airos_xs2_{name}",
+            name=f"{DOMAIN}_{name}",
             update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
         )
 

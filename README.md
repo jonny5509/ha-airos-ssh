@@ -2,7 +2,7 @@
 
 [![Downloads](https://img.shields.io/github/downloads/jonny5509/ha-airos-ssh/total?label=downloads)](https://github.com/jonny5509/ha-airos-ssh/releases)
 
-**Version:** 2.3.1  
+**Version:** 2.3.2  
 **Transport:** SSH  
 **Repository:** https://github.com/jonny5509/ha-airos-ssh
 
@@ -27,6 +27,10 @@ Sensor availability depends on the radio model, firmware, and commands or counte
 - Automated tests cover NS2/NS5 identity and representative airOS 3.x/4.x version strings; optional command availability varies by firmware.
 - May require legacy SSH key-exchange, cipher, or host-key algorithms for older firmware. Physical-radio testing across every firmware build has not been completed.
 
+## Domain and upgrade note
+
+This SSH edition uses the unique Home Assistant domain `airos_xs2_ssh`, so it can coexist with the HTTP edition (`airos_xs2_http`) and the combined AirOS integration (`airos_xs2`). If upgrading from the former shared `airos_xs2` domain, remove the old integration entry and old `custom_components/airos_xs2` folder before installing this edition. Home Assistant does not automatically migrate config entries across domains; add this SSH integration again after installation.
+
 ## Installation
 
 ### HACS
@@ -39,7 +43,7 @@ Sensor availability depends on the radio model, firmware, and commands or counte
 ### Manual
 
 1. Download or clone this repository.
-2. Copy `custom_components/airos_xs2` into your Home Assistant `config/custom_components/` directory.
+2. Copy `custom_components/airos_xs2_ssh` into your Home Assistant `config/custom_components/` directory.
 3. Restart Home Assistant.
 4. Add **Ubiquiti AirOS (SSH)** from **Settings → Devices & services → Add integration**.
 5. Enter the radio's IP address and SSH credentials.

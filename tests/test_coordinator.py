@@ -1,4 +1,4 @@
-from custom_components.airos_xs2.coordinator import (
+from custom_components.airos_xs2_ssh.coordinator import (
     AiRXS2Coordinator,
     _number,
     _to_text,
