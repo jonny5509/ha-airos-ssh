@@ -6,7 +6,7 @@
 **Transport:** SSH  
 **Repository:** https://github.com/jonny5509/ha-airos-ssh
 
-A Home Assistant custom integration for monitoring the original Ubiquiti NanoStation 2 (NS2/XS2) and NanoStation 5 (NS5/XS5) running legacy airOS 3.x–4.x. This edition connects over SSH and runs read-only status commands, with a button to reboot the radio.
+A Home Assistant custom integration for monitoring legacy Ubiquiti airOS radios. This edition connects over SSH and runs read-only status commands, with a button to reboot the radio.
 
 ## Features
 
@@ -21,11 +21,13 @@ Sensor availability depends on the radio model, firmware, and commands or counte
 
 ## Compatibility
 
-- Intended specifically for the original NanoStation 2 (NS2/XS2) and NanoStation 5 (NS5/XS5) with airOS 3.x–4.x.
-- Other product families, including NanoStation Loco, Bullet, PicoStation, and PowerStation, are outside the supported scope.
-- Uses `mca-status` and additional legacy BusyBox/procfs commands where available.
-- Automated tests cover NS2/NS5 identity and representative airOS 3.x/4.x version strings; optional command availability varies by firmware.
-- May require legacy SSH key-exchange, cipher, or host-key algorithms for older firmware. Physical-radio testing across every firmware build has not been completed.
+Officially supported hardware is limited to the original Ubiquiti NanoStation 2 (NS2/XS2) and NanoStation 5 (NS5/XS5), running legacy airOS 3.x–4.x.
+
+NanoStation Loco, Bullet, PicoStation, PowerStation, and other product families are **not officially supported**. Device identification or parsing of similar status fields does not establish compatibility.
+
+This edition uses `mca-status` and additional legacy BusyBox/procfs commands where available. Automated tests cover NS2/NS5 identity and representative airOS 3.x/4.x version strings; optional command availability varies by firmware. Physical-radio testing across every firmware build has not been completed.
+
+May require legacy SSH key-exchange, cipher, or host-key algorithms for older firmware.
 
 ## Domain and upgrade note
 
